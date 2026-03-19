@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "home": "Home",
+    "skills": "Habilidades",
+    "projects": "Projetos",
+    "contact": "Contato"
+  },
+  "hero": {
+    "greeting": "Olá, me chamo",
+    "cta": "Ver Projetos",
+    "available": "Aberto a oportunidades"
+  },
+  "skills": {
+    "title": "Habilidades Técnicas",
+    "categories": {
+      "backend": "Backend",
+      "frontend": "Frontend",
+      "infra": "Infraestrutura / DB",
+      "tools": "Ferramentas"
+    }
+  },
+  "projects": {
+    "title": "Projetos",
+    "viewCase": "Ver Estudo de Caso",
+    "viewRepo": "Ver Repositório",
+    "viewLive": "Ver Projeto",
+    "close": "Fechar"
+  }
+}
