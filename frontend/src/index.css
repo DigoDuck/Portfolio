@@ -8,14 +8,18 @@
   html {
     @apply transition-colors duration-300; /* Transição suave na mudança de tema */
   }
-
   body {
-    @apply bg-surface-light text-slate-900 dark:bg-surface-dark dark:text-slate-100;
+    background-color: #f4f4f2;
+    color: #191013;
     @apply font-sans antialiased;
   }
-
   html {
     scroll-behavior: smooth;
+  }
+
+  .dark body {
+    background-color: #191013;
+    color: #f4f4f2;
   }
 }
 

@@ -21,7 +21,14 @@ export default {
           3: '#f4f4f2',
           4: '#191013',
           5: '#243a69',
-        }
+        },
+        brand: {
+          beige: '#d4cdc5',
+          blue:  '#5b88a5',
+          white: '#f4f4f2',
+          dark:  '#191013',
+          navy:  '#243a69',
+        },
       },
       fontFamily: {
         sans: ["Prompt Regular", "system-ui", "sans-serif"],
@@ -30,16 +37,16 @@ export default {
       animation: {
         "spin-slow": "spin 14s linear infinite",
         "fade-up": "fadeUp 0.5s ease-out forwards",
-        'gradient':  'gradient 8s ease infinite',
+        'gradient': 'gradient 8s ease infinite',
       },
       keyframes: {
-        fadeUp: { // aqui começa a animação
-          "0%": { opacity: "0", transform: "translateY(16px)" },
+        fadeUp: {
+          "0%":   { opacity: "0", transform: "translateY(16px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        gradient: { //efeito de background animado
-          "0%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
+        gradient: {
+          "0%":   { backgroundPosition: "0% 50%" },
+          "50%":  { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "0% 50%" },
         },
       },
