@@ -10,6 +10,11 @@
     "cta": "See Projects",
     "available": "Open to opportunities"
   },
+  "about": {
+  "title": "About Me",
+  "text1": "I'm a Full-Stack Developer focused on building scalable applications, from database modeling to user experience. Currently studying Systems Analysis and Development, I work with modern technologies with a stronger focus on Python(Django) on the back-end and React.js on the front-end.",
+  "text2": "More than just writing code, I'm driven by continuous learning and aim to grow through real-world practice in the tech industry. I'm looking for my first opportunity in the field, bringing a strong desire to absorb knowledge from experienced teams, quickly master new architectures, and deliver real value to projects."
+  },
   "skills": {
     "title": "Technical Skills",
     "categories": {

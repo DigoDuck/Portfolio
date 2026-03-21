@@ -18,7 +18,7 @@ function SkillCard({ skill, index }) {
   return (
     <div
       ref={ref}
-      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#d4cdc5]/10 bg-[#243a69]/20 hover:bg-[#243a69]/40 hover:border-[#5b88a5]/40 group cursor-default"
+      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-200 dark:border-[#d4cdc5]/10 bg-slate-100 dark:bg-[#243a69]/20 hover:bg-slate-200 dark:hover:bg-[#243a69]/40 hover:border-sky-500/40 dark:hover:border-[#5b88a5]/40 transition-all group cursor-default"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(16px)",
@@ -33,7 +33,7 @@ function SkillCard({ skill, index }) {
           e.target.style.display = "none";
         }}
       />
-      <span className="text-xs text-[#d4cdc5]/80 font-medium text-center leading-tight">
+      <span className="text-xs text-slate-800 dark:text-[#d4cdc5]/80 font-medium text-center leading-tight">
         {skill.name}
       </span>
     </div>
@@ -57,8 +57,8 @@ function CategoryBlock({ category, skills, lang }) {
           transition: "opacity 0.5s ease, transform 0.5s ease",
         }}
       >
-        <span className="text-[#5b88a5] font-mono text-lg">{config?.icon}</span>
-        <h3 className="text-lg font-bold text-[#f4f4f2]">
+        <span className="text-sky-600 dark:text-[#5b88a5] font-mono text-lg">{config?.icon}</span>
+        <h3 className="text-lg font-bold text-slate-900 dark:text-[#f4f4f2]">
           {label || category}
         </h3>
       </div>
@@ -92,7 +92,7 @@ export default function SkillsSection() {
         {" "}
         <h2
           ref={ref}
-          className="text-3xl font-bold mb-12 text-[#f4f4f2] text-center"
+          className="text-3xl font-bold mb-12 text-slate-900 dark:text-[#f4f4f2] text-center"
           style={{
             opacity: inView ? 1 : 0,
             transform: inView ? "translateY(0)" : "translateY(16px)",

@@ -10,6 +10,11 @@
     "cta": "Ver Projetos",
     "available": "Aberto a oportunidades"
   },
+  "about": {
+    "title": "Sobre Mim",
+    "text1": "Sou um Desenvolvedor Full-Stack focado em criar aplicações escaláveis, desde a modelagem do banco de dados até a experiência do usuário. Atualmente cursando Análise e Desenvolvimento de Sistemas, utilizo tecnologias modernas com maior domínio em Python(Django) no back-end e React.js no front-end.",
+    "text2": "Mais do que apenas escrever código, sou motivado pelo aprendizado contínuo e pretendo me aperfeiçoar na prática dentro do mundo da tecnologia. Busco minha primeira oportunidade na área, trazendo uma enorme vontade de absorver conhecimento de equipes experientes, dominar novas arquiteturas rapidamente e agregar valor real aos projetos."
+  },
   "skills": {
     "title": "Habilidades Técnicas",
     "categories": {

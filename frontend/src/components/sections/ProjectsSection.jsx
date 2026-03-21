@@ -16,7 +16,7 @@ function ProjectCard({ project, onOpen, loadingSlug, t, index }) {
         transform: inView ? "translateY(0)" : "translateY(24px)",
         transition: `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`,
       }}
-      className="rounded-2xl border border-brand-beige/10 bg-brand-navy/30 hover:border-brand-blue/40 hover:bg-brand-navy/50 transition-all hover:shadow-lg hover:shadow-brand-blue/5 overflow-hidden"
+      className="rounded-2xl border border-slate-200 dark:border-brand-beige/10 bg-slate-50 dark:bg-brand-navy/30 hover:border-sky-500/40 dark:hover:border-brand-blue/40 hover:bg-slate-100 dark:hover:bg-brand-navy/50 transition-all hover:shadow-lg hover:shadow-brand-blue/5 overflow-hidden"
     >
       {project.thumbnail && (
         <img
@@ -26,8 +26,8 @@ function ProjectCard({ project, onOpen, loadingSlug, t, index }) {
         />
       )}
       <div className="p-5">
-        <h3 className="font-semibold text-brand-white mb-2">{project.title}</h3>
-        <p className="text-sm text-brand-beige leading-relaxed mb-4">
+        <h3 className="font-semibold text-slate-900 dark:text-brand-white mb-2">{project.title}</h3>
+        <p className="text-sm text-slate-900 dark:text-brand-beige leading-relaxed mb-4">
           {project.short_description}
         </p>
         <div className="flex flex-wrap gap-5 mb-5">
@@ -44,7 +44,7 @@ function ProjectCard({ project, onOpen, loadingSlug, t, index }) {
         <button
           onClick={() => onOpen(project.slug)}
           disabled={loadingSlug === project.slug}
-          className="text-sm text-brand-blue font-medium hover:text-brand-white transition-colors disabled:opacity-50"
+          className="text-sm text-sky-600 dark:text-brand-blue font-medium hover:text-slate-900 dark:hover:text-brand-white transition-colors disabled:opacity-50"
         >
           {loadingSlug === project.slug
             ? "Carregando..."
@@ -71,7 +71,7 @@ export default function ProjectsSection() {
   return (
     <section id="projects" className="py-20 px-10">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12 text-brand-white">
+        <h2 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-brand-white">
           {t("projects.title")}
         </h2>
 
