@@ -87,9 +87,12 @@ else:
     }
     
 # 6 CORS e REST Framework
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS', 'http://localhost:5173'
-).split(',')
+CORS_ALLOWED_ORIGINS = [
+    origin.strip().rstrip('/')
+    for origin in os.getenv(
+        'CORS_ALLOWED_ORIGINS', 'http://localhost:5173'
+    ).split(',')
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
