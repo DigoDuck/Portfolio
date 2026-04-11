@@ -29,7 +29,7 @@ export default function Navbar() {
     >
       <div className="w-full px-10 h-20 flex items-center justify-between">
         <span className="font-mono font-bold text-3xl text-slate-900 dark:text-white/90">
-          &lt;Portfolio /&gt;
+          &lt; 🧑🏾‍💻 /&gt;
         </span>
 
         <div className="hidden md:flex items-center gap-10">

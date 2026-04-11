@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useProfile } from "@/hooks/useProfile";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
+import Aurora from "../ui/Aurora";
+
 function RotatingSeal({ text = "Backend Developer" }) {
   const safeText = text || "Backend Developer";
 
@@ -59,13 +61,15 @@ export default function HeroSection() {
       id="home"
       className="min-h-screen flex items-center relative overflow-hidden"
     >
-      {/* Gradiente de Fundo */}
-      <div
-        className="absolute inset-0 opacity-55 dark:opacity-10 blur-lg gradient-animated"
-        style={{
-          background: "linear-gradient(135deg, #0ea5e9, #8b5cf6, #06b6d4)",
-        }}
-      />
+      {/* Efeito Aurora de Fundo */}
+      <div className="absolute inset-0 z-0 opacity-80 dark:opacity-40 transition-opacity duration-300">
+        <Aurora
+          colorStops={["#1f93ff", "#321986", "#0dd7f2"]}
+          blend={0.5}
+          amplitude={1.0}
+          speed={1}
+        />
+      </div>
 
       <div className="container mx-auto px-10 pt-28 pb-20 relative z-10">
         <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-12">
@@ -141,25 +145,25 @@ export default function HeroSection() {
         </div>
 
         {/* Sobre mim */}
-          <div
-            className="mt-32 pt-16 border-t border-slate-500/20 animate-fade-up"
-            style={{ animationDelay: "0.6s", opacity: 0 }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-1 bg-primary-500 rounded-full" />
-              <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-wide">
-                {t("about.title")}
-              </h2>
-            </div>
-            <div className="max-full space-y-5">
-              <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
-                {t("about.text1")}
-              </p>
-              <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
-                {t("about.text2")}
-              </p>
-            </div>
+        <div
+          className="mt-32 pt-16 border-t border-slate-500/20 animate-fade-up"
+          style={{ animationDelay: "0.6s", opacity: 0 }}
+        >
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-1 bg-primary-500 rounded-full" />
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-wide">
+              {t("about.title")}
+            </h2>
           </div>
+          <div className="max-full space-y-5">
+            <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
+              {t("about.text1")}
+            </p>
+            <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
+              {t("about.text2")}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
