@@ -1,7 +1,8 @@
 import os
-import urllib.parse
 from pathlib import Path
 from dotenv import load_dotenv
+
+from core.database import build_database_config
 
 # 1 Caminhos e Variáveis de Ambiente
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -64,27 +65,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # 5 Banco de Dados
 database_url = os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}')
 
-if database_url.startswith('sqlite'):
-    db_path = database_url.replace('sqlite:///', '')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': db_path,
-        }
-    }
-else:
-    parsed = urllib.parse.urlparse(database_url)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': parsed.path[1:],
-            'USER': parsed.username,
-            'PASSWORD': parsed.password,
-            'HOST': parsed.hostname,
-            'PORT': parsed.port or 5432,
-            'OPTIONS': {'sslmode': 'require'} if not DEBUG else {},
-        }
-    }
+DATABASES = {
+    'default': build_database_config(database_url, DEBUG),
+}
     
 # 6 CORS e REST Framework
 CORS_ALLOWED_ORIGINS = [
