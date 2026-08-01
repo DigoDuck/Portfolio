@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Profile, Skill, Project
@@ -7,15 +7,15 @@ from .serializers import ProfileSerializer, SkillSerializer, ProjectListSerializ
 class ProfileView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def get(self, req):
-        try:
-            profile = Profile.objects.first()
-            if not profile:
-                return Response({'detaild': 'Profile not configured.'}, status=404)
-            serializer = ProfileSerializer(profile, context={'request': req})
-            return Response(serializer.data)
-        except Exception as e:
-            return Response({'detail': str(e)}, status=500)
+    def get(self, request):
+        profile = Profile.objects.first()
+        if profile is None:
+            return Response(
+                {'detail': 'Profile not configured.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = ProfileSerializer(profile, context={'request': request})
+        return Response(serializer.data)
 
 class SkillListView(generics.ListAPIView):
     permission_classes = {permissions.AllowAny}
