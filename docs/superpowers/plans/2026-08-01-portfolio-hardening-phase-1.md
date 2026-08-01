@@ -180,7 +180,7 @@ git commit -m "fix: protect portfolio API error details"
 **Interfaces:**
 
 * Consumes: `Profile` model and existing application-level `save()` guard.
-* Produces: `Profile.singleton_guard`, an internal unique Boolean column that every application-created profile leaves as `True`.
+* Produces: `Profile.singleton_guard`, an internal integer sentinel forced to `1` by a check constraint and protected by a unique constraint.
 
 - [ ] **Step 1: Write a database-level regression test**
 
@@ -193,13 +193,14 @@ from django.test import TransactionTestCase
 from apps.portfolio.models import Profile
 
 
-def unsaved_profile(name):
+def unsaved_profile(name, singleton_guard=1):
     return Profile(
         full_name=name,
         role_pt="Desenvolvedor",
         role_en="Developer",
         bio_pt="Biografia",
         bio_en="Biography",
+        singleton_guard=singleton_guard,
     )
 
 
@@ -209,6 +210,12 @@ class ProfileSingletonTests(TransactionTestCase):
             Profile.objects.bulk_create(
                 [unsaved_profile("Primeiro"), unsaved_profile("Segundo")]
             )
+
+    def test_database_rejects_a_noncanonical_singleton_guard(self):
+        with self.assertRaises(IntegrityError):
+            Profile.objects.bulk_create(
+                [unsaved_profile("Inválido", singleton_guard=2)]
+            )
 ```
 
 - [ ] **Step 2: Run the model test and verify RED**
@@ -217,17 +224,32 @@ class ProfileSingletonTests(TransactionTestCase):
 .\.venv\Scripts\python.exe .\backend\manage.py test apps.portfolio.tests.test_models -v 2
 ```
 
-Expected: FAIL because `bulk_create` inserts both profiles without raising `IntegrityError`.
+Expected: both tests fail because `bulk_create` accepts multiple profiles and arbitrary sentinel values.
 
 - [ ] **Step 3: Add the unique guard and migration**
 
 Add to `Profile` in `models.py`:
 
 ```python
-singleton_guard = models.BooleanField(default=True, editable=False, unique=True)
+singleton_guard = models.PositiveSmallIntegerField(default=1, editable=False)
 ```
 
-Keep the current `save()` validation for a friendly application-level error and fix its indentation. Generate the migration, then adjust it so existing data is validated before uniqueness is applied:
+Add these constraints to `Profile.Meta`:
+
+```python
+constraints = [
+    models.CheckConstraint(
+        condition=models.Q(singleton_guard=1),
+        name="profile_singleton_guard_is_one",
+    ),
+    models.UniqueConstraint(
+        fields=["singleton_guard"],
+        name="unique_profile_singleton_guard",
+    ),
+]
+```
+
+Keep the current `save()` validation for a friendly application-level error and fix its indentation. Generate the migration, then adjust it so existing data is validated before both constraints are applied:
 
 ```python
 from django.db import migrations, models
@@ -248,13 +270,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="profile",
             name="singleton_guard",
-            field=models.BooleanField(default=True, editable=False),
+            field=models.PositiveSmallIntegerField(default=1, editable=False),
         ),
         migrations.RunPython(ensure_single_profile, migrations.RunPython.noop),
-        migrations.AlterField(
+        migrations.AddConstraint(
             model_name="profile",
-            name="singleton_guard",
-            field=models.BooleanField(default=True, editable=False, unique=True),
+            constraint=models.CheckConstraint(
+                condition=models.Q(singleton_guard=1),
+                name="profile_singleton_guard_is_one",
+            ),
+        ),
+        migrations.AddConstraint(
+            model_name="profile",
+            constraint=models.UniqueConstraint(
+                fields=("singleton_guard",),
+                name="unique_profile_singleton_guard",
+            ),
         ),
     ]
 ```
