@@ -11,7 +11,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[3]
 
 
 class SecuritySettingsTests(SimpleTestCase):
-    def test_production_enables_proxy_aware_https_defaults(self):
+    def load_settings(self, debug):
         code = """
 import json
 from django.conf import settings
@@ -30,7 +30,7 @@ print(json.dumps({
             {
                 "DJANGO_SETTINGS_MODULE": "core.settings",
                 "DJANGO_SECRET_KEY": "test-only-secret-key",
-                "DEBUG": "False",
+                "DEBUG": debug,
                 "DATABASE_URL": "sqlite:///db.sqlite3",
                 "ALLOWED_HOSTS": "testserver",
             }
@@ -44,7 +44,10 @@ print(json.dumps({
             text=True,
             check=True,
         )
-        config = json.loads(result.stdout)
+        return json.loads(result.stdout)
+
+    def test_production_enables_proxy_aware_https_defaults(self):
+        config = self.load_settings("False")
 
         self.assertEqual(config["proxy"], ["HTTP_X_FORWARDED_PROTO", "https"])
         self.assertTrue(config["redirect"])
@@ -53,3 +56,12 @@ print(json.dumps({
         self.assertEqual(config["hsts_seconds"], 3600)
         self.assertFalse(config["hsts_subdomains"])
         self.assertFalse(config["hsts_preload"])
+
+    def test_development_disables_https_defaults(self):
+        config = self.load_settings("True")
+
+        self.assertEqual(config["proxy"], ["HTTP_X_FORWARDED_PROTO", "https"])
+        self.assertFalse(config["redirect"])
+        self.assertFalse(config["session_secure"])
+        self.assertFalse(config["csrf_secure"])
+        self.assertEqual(config["hsts_seconds"], 0)
