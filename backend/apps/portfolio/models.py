@@ -10,6 +10,7 @@ class Profile(models.Model):
     role_en = models.CharField(max_length=200)
     bio_pt = models.TextField()
     bio_en = models.TextField()
+    singleton_guard = models.PositiveSmallIntegerField(default=1, editable=False)
     
     photo = models.ImageField(upload_to='profile/', blank=True, null=True)
     
@@ -23,14 +24,24 @@ class Profile(models.Model):
     
     class Meta:
         verbose_name = 'Perfil'
-        
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(singleton_guard=1),
+                name="profile_singleton_guard_is_one",
+            ),
+            models.UniqueConstraint(
+                fields=["singleton_guard"],
+                name="unique_profile_singleton_guard",
+            ),
+        ]
+
     def save(self, *args, **kwargs):
-            if not self.pk and Profile.objects.exists():
-                raise ValueError("Apenas um perfil pode existir.")
-            super().save(*args, **kwargs)
-            
+        if not self.pk and Profile.objects.exists():
+            raise ValueError("Apenas um perfil pode existir.")
+        super().save(*args, **kwargs)
+
     def __str__(self):
-            return self.full_name
+        return self.full_name
         
 class Skill(models.Model):
     """Habilidades Técnicas"""

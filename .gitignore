@@ -27,4 +27,5 @@ Thumbs.db
 # IDEs
 .vscode/
 .idea/
+.worktrees/
 EOF

@@ -1,7 +1,8 @@
 import os
-import urllib.parse
 from pathlib import Path
 from dotenv import load_dotenv
+
+from core.database import build_database_config
 
 # 1 Caminhos e Variáveis de Ambiente
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,6 +14,13 @@ load_dotenv(env_path)
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = 0 if DEBUG else 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 
 # 3 Aplicativos Instalados
 INSTALLED_APPS = [
@@ -64,27 +72,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # 5 Banco de Dados
 database_url = os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}')
 
-if database_url.startswith('sqlite'):
-    db_path = database_url.replace('sqlite:///', '')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': db_path,
-        }
-    }
-else:
-    parsed = urllib.parse.urlparse(database_url)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': parsed.path[1:],
-            'USER': parsed.username,
-            'PASSWORD': parsed.password,
-            'HOST': parsed.hostname,
-            'PORT': parsed.port or 5432,
-            'OPTIONS': {'sslmode': 'require'} if not DEBUG else {},
-        }
-    }
+DATABASES = {
+    'default': build_database_config(database_url, DEBUG),
+}
     
 # 6 CORS e REST Framework
 CORS_ALLOWED_ORIGINS = [
@@ -101,6 +91,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
+    'EXCEPTION_HANDLER': 'core.exceptions.api_exception_handler',
 }
 
 # 7 Arquivos Estáticos e Internacionalização
