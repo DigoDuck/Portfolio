@@ -1,7 +1,7 @@
 tasks:
 - id: T-001
   title: 'Sincronizar o main local com a PR #1 mesclada e limpar a branch de hardening'
-  state: backlog
+  state: done
   notes: 'O main local está parado em e995be7 (''docs: add phase one hardening plan'',
     2026-08-01), 9 commits atrás de origin/main (6ec75f4, merge da PR #1 ''Fix portfolio
     backend production hardening'' em 2026-08-14, confirmado via `gh pr view 1` e
@@ -13,8 +13,21 @@ tasks:
     uso porque a PR foi mesclada. Feito quando `git log -1 --format=%H` em main aponta
     para 6ec75f4 (ou descendente), `git worktree list` não lista mais phase-1, e a
     chave ''detaild'' não existe mais em views.py.'
+  log:
+  - date: '2026-09-06'
+    text: 'Fechada em 2026-09-06. O `git pull` da PR #1 já tinha sido feito antes
+      desta sessão: main estava em 7ca6b53, com singleton_guard em models.py e a chave
+      ''detail'' corrigida em views.py. Nesta sessão restava a limpeza, feita: `git
+      worktree remove .worktrees/phase-1` (worktree sem alterações pendentes), `git
+      branch -d fix/portfolio-hardening-phase-1` (mesclada em main), diretório .worktrees/
+      vazio removido, e push do commit local pendente 7ca6b53 (''chore: untrack .mcp.json'')
+      para origin/main. Critérios do escopo atendidos: `git worktree list` só lista
+      o repo principal, a branch local não existe mais, e ''detaild'' não aparece
+      em backend/. Sobra uma pendência fora do critério: a branch remota origin/fix/portfolio-hardening-phase-1
+      ainda existe no GitHub, já mesclada; apagar exige confirmação do Diogo. Baseline
+      de testes ao fechar: 12 testes do backend passando.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T13:23:34.867199Z'
 - id: T-002
   title: 'Fase 2 do design de hardening: storage S3/Railway em produção'
   state: backlog
@@ -30,8 +43,26 @@ tasks:
     do storage. Feito quando existir um plano equivalente para a Fase 2 e os testes
     de configuração do 'Resultado verificável' da seção passarem (WhiteNoise para
     staticfiles, filesystem em dev, S3 em produção, falha explícita sem credencial).
+  log:
+  - date: '2026-09-06'
+    text: 'Escopo reduzido em 2026-09-06, ver DEC-001. O primeiro item da Fase 2 (''Substituir
+      STATICFILES_STORAGE pela configuração STORAGES do Django 6'' e ''Usar WhiteNoise
+      somente para arquivos estáticos'') já está entregue no commit 6db82bb, com teste
+      em backend/apps/portfolio/tests/test_storage_settings.py. Era bug ativo, não
+      dívida: o Django 6.0 removeu STATICFILES_STORAGE e a produção servia estáticos
+      pelo StaticFilesStorage puro, sem hash nem compressão. Restam nesta tarefa:
+      adicionar django-storages ao backend/requirements.txt (hoje tem só whitenoise,
+      pillow, psycopg2-binary), configurar S3 para mídia por AWS_ENDPOINT_URL / AWS_ACCESS_KEY_ID
+      / AWS_SECRET_ACCESS_KEY / AWS_S3_BUCKET_NAME / AWS_DEFAULT_REGION, manter FileSystemStorage
+      só com DEBUG=True (o ponto de troca já está explícito em STORAGES[''default'']),
+      gerar URLs assinadas, falhar na inicialização de produção quando faltar credencial,
+      e documentar as variáveis da Railway mais o procedimento manual de cópia das
+      imagens do Render. Bloqueio prático: exige o Railway Bucket criado e as credenciais
+      emitidas, o que ainda não aconteceu. Detalhe operacional achado no caminho:
+      backend/requirements.txt está salvo em UTF-16 LE com BOM, o que o pip lê sem
+      problema (ele detecta BOM) mas atrapalha grep e diff.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T13:24:05.497242Z'
 - id: T-003
   title: 'Fase 3 do design de hardening: contratos e estados do frontend'
   state: backlog
