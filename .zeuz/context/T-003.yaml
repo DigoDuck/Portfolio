@@ -1,0 +1,64 @@
+task_id: T-003
+refs:
+- kind: file
+  value: docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md
+  lines: 55-72
+  note: 'Escopo e resultado verificável da Fase 3. É a fonte da tarefa, mas se contradiz:
+    exige testes React que a spec só instrumenta na Fase 4. Ver DEC-002.'
+- kind: file
+  value: docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md
+  lines: 101-117
+  note: Tratamento de erros e estratégia de testes. Define a regra de que cada bug
+    comportamental é reproduzido por um teste que falha ANTES da correção, e que o
+    axios é mockado só na fronteira HTTP.
+- kind: file
+  value: backend/apps/portfolio/serializers.py
+  lines: 10-31
+  note: 'ProfileSerializer. É o contrato real que a Fase 3 manda o frontend consumir:
+    os campos são photo, bio e seal_text. O HeroSection lia rotating_seal_text, que
+    nunca existiu na resposta. Confira aqui antes de acreditar em qualquer nome de
+    campo usado no frontend.'
+- kind: file
+  value: backend/apps/portfolio/serializers.py
+  lines: 4-8
+  note: SkillSerializer. Não tem nenhum campo traduzido por idioma. É por isso que
+    useSkills NÃO deve refazer a busca quando o idioma muda, ao contrário de useProfile
+    e useProjects.
+- kind: decision
+  value: DEC-002
+  lines: null
+  note: Por que Vitest, RTL e jsdom foram puxados da Fase 4 para dentro da Fase 3,
+    e o que sobrou da Fase 4 (o ESLint para .js/.jsx continua lá).
+- kind: decision
+  value: DEC-001
+  lines: null
+  note: 'Estado real da Fase 2. Importante para a T-004 e a T-002: mídia ainda é FileSystemStorage,
+    então o campo photo pode mudar de forma de URL quando o S3 entrar.'
+- kind: file
+  value: frontend/src/api/client.js
+  lines: null
+  note: Interceptor do axios que injeta ?lang= a partir do estado do zustand em toda
+    requisição. É o ponto que acopla o store ao backend e a razão de a dessincronia
+    entre i18next e store virar bug de dados, não só de texto.
+- kind: text
+  value: 'Divisão de arquivos usada na Fase 3 para rodar três agentes em paralelo
+    sem conflito de escrita. T-007: main.jsx, i18n/index.js, store/useAppStore.js,
+    components/layout/Navbar.jsx, components/sections/SkillsSection.jsx. T-008: hooks/useProfile.js,
+    hooks/useSkills.js, hooks/useProjects.js, components/sections/ProjectsSection.jsx.
+    T-009: components/sections/HeroSection.jsx, components/ui/ProjectModal.jsx. Contratos
+    fixados antes de paralelizar, porque atravessam as três: os hooks retornam { data,
+    loading, error }; as chaves de i18n corretas são projects.viewCase, projects.viewRepo
+    e projects.viewLive (os componentes chamavam caseStudy, repo e live, que não existem);
+    as chaves de estado states.loading e states.error foram criadas na T-006 justamente
+    para nenhum agente precisar editar os locales.'
+  lines: null
+  note: Como a fase foi paralelizada e quais contratos foram fixados antes. Repetir
+    a divisão é o caminho mais rápido se a Fase 4 também for paralelizada.
+- kind: file
+  value: frontend/vite.config.js
+  lines: null
+  note: Onde ficou a guarda de VITE_API_URL (no command === 'build') e a configuração
+    do Vitest. A guarda no build é o motivo de o fallback localhost de api/client.js
+    ser inalcançável em produção.
+deliveries:
+- '2026-09-06T13:30:28.416646Z'
