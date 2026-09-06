@@ -5,7 +5,7 @@ import { useInView } from "@/hooks/useInView";
 import ProjectModal from "@/components/ui/ProjectModal";
 import api from "@/api/client";
 
-function ProjectCard({ project, onOpen, loadingSlug, t, index }) {
+function ProjectCard({ project, onOpen, loadingSlug, errorSlug, t, index }) {
   const { ref, inView } = useInView();
 
   return (
@@ -47,9 +47,14 @@ function ProjectCard({ project, onOpen, loadingSlug, t, index }) {
           className="text-sm text-sky-600 dark:text-brand-blue font-medium hover:text-slate-900 dark:hover:text-brand-white transition-colors disabled:opacity-50"
         >
           {loadingSlug === project.slug
-            ? "Carregando..."
-            : `${t("projects.caseStudy")} →`}
+            ? t("states.loading")
+            : `${t("projects.viewCase")} →`}
         </button>
+        {errorSlug === project.slug && (
+          <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+            {t("states.error")}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -57,15 +62,24 @@ function ProjectCard({ project, onOpen, loadingSlug, t, index }) {
 
 export default function ProjectsSection() {
   const { t } = useTranslation();
-  const { data: projects } = useProjects();
+  const { data: projects, loading, error } = useProjects();
   const [selected, setSelected] = useState(null);
   const [loadingSlug, setLoadingSlug] = useState(null);
+  const [errorSlug, setErrorSlug] = useState(null);
 
   const openProject = async (slug) => {
     setLoadingSlug(slug);
-    const res = await api.get(`/projects/${slug}/`);
-    setSelected(res.data);
-    setLoadingSlug(null);
+    setErrorSlug(null);
+    try {
+      const res = await api.get(`/projects/${slug}/`);
+      setSelected(res.data);
+    } catch {
+      // Sem isto o slug ficava preso em loadingSlug e o botão do card
+      // permanecia desabilitado até um reload da página.
+      setErrorSlug(slug);
+    } finally {
+      setLoadingSlug(null);
+    }
   };
 
   return (
@@ -75,6 +89,20 @@ export default function ProjectsSection() {
           {t("projects.title")}
         </h2>
 
+        {loading && (
+          <p className="text-center text-slate-900 dark:text-brand-beige">
+            {t("states.loading")}
+          </p>
+        )}
+        {error && (
+          <p
+            role="alert"
+            className="text-center text-red-600 dark:text-red-400"
+          >
+            {t("states.error")}
+          </p>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {projects.map((project, index) => (
             <ProjectCard
@@ -83,6 +111,7 @@ export default function ProjectsSection() {
               index={index}
               onOpen={openProject}
               loadingSlug={loadingSlug}
+              errorSlug={errorSlug}
               t={t}
             />
           ))}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAppStore } from "@/store/useAppStore";
 
 export default function Navbar() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { theme, toggleTheme, lang, toggleLang } = useAppStore();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -13,11 +13,6 @@ export default function Navbar() {
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
-
-  const handleLangToggle = () => {
-    toggleLang();
-    i18n.changeLanguage(lang === "pt" ? "en" : "pt");
-  };
 
   return (
     <nav
@@ -44,7 +39,7 @@ export default function Navbar() {
           ))}
 
           <button
-            onClick={handleLangToggle}
+            onClick={toggleLang}
             className="text-base font-mono px-4 py-2 border border-slate-700 dark:border-white/20 rounded hover:border-slate-500 dark:hover:border-white/50 text-slate-700 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-all"
           >
             {lang === "pt" ? "PT" : "EN"}
@@ -60,7 +55,7 @@ export default function Navbar() {
         </div>
         <div className="flex md:hidden items-center gap-3">
           <button
-            onClick={handleLangToggle}
+            onClick={toggleLang}
             className="text-sm font-mono px-3 py-1.5 border border-white/20 rounded text-white/60 hover:text-white transition-all"
           >
             {lang === "pt" ? "PT" : "EN"}
