@@ -1,0 +1,13 @@
+name: Portfolio
+description: 'Portfolio pessoal: monorepo Django 6 + DRF no backend e React 19 + Vite
+  no frontend, com o frontend publicado na Vercel e o backend hoje no Render, com
+  migração para a Railway planejada. O design de hardening em 4 fases (docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md)
+  teve a Fase 1 (contrato de erro da API, singleton do Profile, parsing de DATABASE_URL,
+  HTTPS/HSTS) implementada e mesclada na PR #1 do GitHub em 2026-08-14, mas o clone
+  local do main nunca foi atualizado depois disso: parou em ''docs: add phase one
+  hardening plan'' (2026-08-01) e ainda carrega a branch e o worktree fix/portfolio-hardening-phase-1,
+  já mesclados. As Fases 2 (storage S3/Railway), 3 (contratos e estados do frontend)
+  e 4 (acessibilidade e acabamento) do mesmo design nunca começaram: não há plano
+  nem commit para nenhuma delas. Última atividade real no projeto (sessões Codex com
+  cwd aqui) foi em 2026-08-01 entre 07:40 e 09:11.'
+created_at: '2026-09-06T12:33:50.075386Z'

@@ -1,0 +1,78 @@
+tasks:
+- id: T-001
+  title: 'Sincronizar o main local com a PR #1 mesclada e limpar a branch de hardening'
+  state: backlog
+  notes: 'O main local está parado em e995be7 (''docs: add phase one hardening plan'',
+    2026-08-01), 9 commits atrás de origin/main (6ec75f4, merge da PR #1 ''Fix portfolio
+    backend production hardening'' em 2026-08-14, confirmado via `gh pr view 1` e
+    `git fetch origin`). Por isso o working tree ainda mostra o código pré-hardening:
+    backend/apps/portfolio/views.py linha 14 ainda usa a chave ''detaild'' em vez
+    de ''detail'', e backend/apps/portfolio/models.py não tem o campo singleton_guard.
+    Fazer `git pull` (fast-forward) em main; depois remover a branch local fix/portfolio-hardening-phase-1
+    e o worktree .worktrees/phase-1 (visível em `git worktree list`), que já não têm
+    uso porque a PR foi mesclada. Feito quando `git log -1 --format=%H` em main aponta
+    para 6ec75f4 (ou descendente), `git worktree list` não lista mais phase-1, e a
+    chave ''detaild'' não existe mais em views.py.'
+  created_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T12:35:33.655753Z'
+- id: T-002
+  title: 'Fase 2 do design de hardening: storage S3/Railway em produção'
+  state: backlog
+  notes: docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção 'Fase
+    2', pede STORAGES do Django 6 em vez de STATICFILES_STORAGE, WhiteNoise só para
+    estáticos, django-storages+S3 para mídia (variáveis AWS_ENDPOINT_URL, AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET_NAME, AWS_DEFAULT_REGION), FileSystemStorage
+    só quando DEBUG=True, URLs assinadas e falha explícita se faltar credencial. backend/requirements.txt
+    ainda não tem django-storages (só whitenoise, pillow, psycopg2-binary). Não existe
+    nenhum plano nem commit para essa fase; só a Fase 1 tem plano próprio, em docs/superpowers/plans/2026-08-01-portfolio-hardening-phase-1.md.
+    É a próxima porque a Fase 1 (pré-requisito de segurança) já está mesclada e o
+    objetivo declarado do design é preparar a migração Render -> Railway, que depende
+    do storage. Feito quando existir um plano equivalente para a Fase 2 e os testes
+    de configuração do 'Resultado verificável' da seção passarem (WhiteNoise para
+    staticfiles, filesystem em dev, S3 em produção, falha explícita sem credencial).
+  created_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T12:35:33.655753Z'
+- id: T-003
+  title: 'Fase 3 do design de hardening: contratos e estados do frontend'
+  state: backlog
+  notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção ''Fase
+    3'': consumir photo/bio/seal_text do perfil, corrigir chaves de tradução de case
+    study/repositório/demo, mensagens traduzidas de loading e erro, sincronizar idioma
+    persistido com i18next e document.documentElement.lang, aplicar tema antes da
+    primeira renderização, tratar erro e cancelamento nos hooks de perfil/skills/projetos,
+    exigir VITE_API_URL em produção. Nenhum commit ou plano existe para essa fase;
+    depende das Fases 1-2 prontas, na ordem em que o design as lista. Feito quando
+    existir o plano da Fase 3 e os testes React do ''Resultado verificável'' passarem
+    (sincronização de idioma/tema, contrato do perfil, recuperação de falha, descarte
+    de respostas obsoletas, build falhando sem VITE_API_URL).'
+  created_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T12:35:33.655753Z'
+- id: T-004
+  title: 'Fase 4 do design de hardening: acessibilidade e acabamento do frontend'
+  state: backlog
+  notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção ''Fase
+    4'': role=dialog/aria-modal/foco no modal, nomes acessíveis nos controles móveis
+    e de tema, prefers-reduced-motion, lazy-load do modal, corrigir a fonte Prompt,
+    estilos próprios de Markdown, ESLint cobrindo .js/.jsx, adicionar Vitest + React
+    Testing Library + jest-dom + jsdom, remover o EOF literal do .gitignore. frontend/package.json
+    confirma: eslint.config.js existe mas devDependencies não tem vitest, @testing-library
+    nem jsdom. Última fase do design, depende do frontend já ajustado pela Fase 3.
+    Feito quando o plano da Fase 4 existir e os testes de teclado/foco/ARIA/reduced-motion
+    passarem, ESLint cobrir .jsx, e o build não emitir mais o aviso da fonte.'
+  created_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T12:35:33.655753Z'
+- id: T-005
+  title: 'Migração operacional do backend: Render para Railway'
+  state: backlog
+  notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, objetivo
+    declarado: ''preparar o backend para a migração do Render para a Railway''; seção
+    ''Migração operacional'' é explícita que o código só prepara e documenta variáveis,
+    sem criar recursos na Railway, copiar arquivos do Render ou mudar DNS, porque
+    isso ''exige acesso aos serviços e uma confirmação separada''. Bloqueada até as
+    Fases 2-4 estarem prontas, em especial o storage S3 (hoje mídia usa filesystem
+    local, que não sobrevive a um deploy novo). É o objetivo final citado no próprio
+    design, não escopo inventado por esta tarefa. Feito quando o backend estiver servindo
+    na Railway com o mesmo domínio/CORS que hoje aponta para o Render, o storage S3
+    validado em produção, e o serviço no Render desligado.'
+  created_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T12:35:33.655753Z'
