@@ -61,11 +61,17 @@ tasks:
       emitidas, o que ainda não aconteceu. Detalhe operacional achado no caminho:
       backend/requirements.txt está salvo em UTF-16 LE com BOM, o que o pip lê sem
       problema (ele detecta BOM) mas atrapalha grep e diff.'
+  - date: '2026-09-06'
+    text: 'Bloqueada por dependência externa: o bucket de mídia no Railway ainda não
+      foi criado, e a criação é do usuário, não de um agente. Não promover para ready
+      até o usuário confirmar que o bucket existe e que as credenciais estão nas variáveis
+      de ambiente. Ver também a ordem em relação à T-005 (migração Render para Railway),
+      ainda não resolvida.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T13:24:05.497242Z'
+  updated_at: '2026-09-06T13:30:21.130384Z'
 - id: T-003
   title: 'Fase 3 do design de hardening: contratos e estados do frontend'
-  state: backlog
+  state: review
   notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção ''Fase
     3'': consumir photo/bio/seal_text do perfil, corrigir chaves de tradução de case
     study/repositório/demo, mensagens traduzidas de loading e erro, sincronizar idioma
@@ -76,8 +82,28 @@ tasks:
     existir o plano da Fase 3 e os testes React do ''Resultado verificável'' passarem
     (sincronização de idioma/tema, contrato do perfil, recuperação de falha, descarte
     de respostas obsoletas, build falhando sem VITE_API_URL).'
+  log:
+  - date: '2026-09-06'
+    text: 'Promovida pelo usuário nesta sessão, na frente da T-002. Motivo: a T-002
+      depende de um bucket no Railway que ainda não existe, e a Fase 3 é frontend,
+      sem acoplamento com a infraestrutura pendente.'
+  - date: '2026-09-06'
+    text: 'Fase 3 completa na R-001, via T-006 a T-009, todas também em review. Os
+      dez itens de escopo da spec foram atendidos e a suíte fecha em 29 testes verdes.
+
+
+      Deliberadamente NÃO marcada done: o usuário ainda não viu o resultado rodando,
+      e nada aqui foi validado num navegador contra o backend de verdade. A verificação
+      toda é teste automatizado com axios mockado na fronteira HTTP, mais o build
+      de produção nos dois sentidos.
+
+
+      Ponto que merece o olho do usuário antes do done: o "Sobre mim" passou a preferir
+      o campo bio da API sobre o texto local do i18n. Isso é o que a spec pede, mas
+      troca o texto visível da página pelo que estiver cadastrado no admin, e os dois
+      textos hoje são diferentes.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T13:47:39.254011Z'
 - id: T-004
   title: 'Fase 4 do design de hardening: acessibilidade e acabamento do frontend'
   state: backlog
@@ -90,8 +116,29 @@ tasks:
     nem jsdom. Última fase do design, depende do frontend já ajustado pela Fase 3.
     Feito quando o plano da Fase 4 existir e os testes de teclado/foco/ARIA/reduced-motion
     passarem, ESLint cobrir .jsx, e o build não emitir mais o aviso da fonte.'
+  log:
+  - date: '2026-09-06'
+    text: 'Dois itens da Fase 4 mudaram de estado durante a execução da Fase 3 (R-001),
+      antes de alguém pegar esta tarefa.
+
+
+      JÁ FEITO, pode riscar do escopo: "Adicionar Vitest, React Testing Library, jest-dom
+      e jsdom". Foi puxado para a Fase 3 por necessidade, ver DEC-002. Já existem
+      4 arquivos de teste e 29 testes passando, e src/test/setup.js já carrega o jest-dom
+      e stuba o IntersectionObserver globalmente.
+
+
+      CONTINUA NA FASE 4, e é mais grave do que a spec sugere: "Configurar ESLint
+      para JavaScript e JSX". Não é acabamento, é uma verificação falsa. O eslint.config.js
+      restringe o lint a **/*.{ts,tsx} e o projeto tem ZERO arquivos .ts ou .tsx.
+      Medido: `npx eslint src/App.jsx` responde "File ignored because no matching
+      configuration was supplied" e `npx eslint . --debug` lista zero arquivos analisados.
+      Ou seja, `npm run lint` retorna "No issues found" com exit 0 sem ler uma linha
+      de código, e esse comando está na lista de verificação final da spec. Enquanto
+      isso não for corrigido, qualquer relatório que cite `npm run lint` como evidência
+      está citando nada.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T12:35:33.655753Z'
+  updated_at: '2026-09-06T13:47:31.419215Z'
 - id: T-005
   title: 'Migração operacional do backend: Render para Railway'
   state: backlog
@@ -107,3 +154,190 @@ tasks:
     validado em produção, e o serviço no Render desligado.'
   created_at: '2026-09-06T12:35:33.655753Z'
   updated_at: '2026-09-06T12:35:33.655753Z'
+- id: T-006
+  title: 'Fase 3a: infraestrutura de testes do frontend e guarda de VITE_API_URL'
+  state: review
+  notes: 'Fundação da Fase 3 (T-003). Sequencial: precisa estar pronta antes das T-007/T-008/T-009,
+    que escrevem testes. Ver DEC-002 para por que o Vitest foi puxado da Fase 4.
+
+
+    Escopo:
+
+    - Instalar vitest, @testing-library/react, @testing-library/jest-dom, @testing-library/user-event,
+    jsdom.
+
+    - Configurar `test` em frontend/vite.config.js (environment jsdom, setupFiles)
+    e o script `test` em frontend/package.json.
+
+    - src/api/client.js: exigir VITE_API_URL quando import.meta.env.PROD, com mensagem
+    clara; manter o fallback http://localhost:8000/api em dev.
+
+    - Adicionar ao contrato de i18n as chaves de estado (states.loading, states.error)
+    em pt.json e en.json, para as tarefas seguintes consumirem sem disputar o arquivo.
+
+
+    Arquivos: frontend/package.json, frontend/vite.config.js, frontend/src/test/setup.js,
+    frontend/src/api/client.js, frontend/src/i18n/locales/{pt,en}.json.
+
+
+    Verificação: `npm run test` roda e o teste do client falha sem VITE_API_URL em
+    modo produção e passa com ele.'
+  log:
+  - date: '2026-09-06'
+    text: 'Feita na R-001. Desvio do escopo original registrado: src/api/client.js
+      NÃO foi alterado. A guarda de VITE_API_URL ficou em vite.config.js, no `command
+      === "build"`, porque a spec exige que o BUILD falhe, e um throw em client.js
+      só quebraria no navegador do visitante, depois do deploy já ter passado. Com
+      a guarda no build, o fallback de localhost em client.js vira inalcançável em
+      produção, então mexer nele seria diff sem efeito.'
+  created_at: '2026-09-06T13:33:25.944489Z'
+  updated_at: '2026-09-06T13:36:54.903384Z'
+- id: T-007
+  title: 'Fase 3b: sincronizar idioma e tema persistidos com i18next e o documento'
+  state: review
+  notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes).
+
+
+    Bug confirmado por leitura: src/i18n/index.js inicializa sempre com lng ''pt'',
+    enquanto o zustand persist reidrata `lang` do localStorage. Quem salvou ''en''
+    volta com a interface em português e a API recebendo lang=en. document.documentElement.lang
+    nunca é definido. src/components/sections/SkillsSection.jsx lê i18n.language enquanto
+    o resto do app lê o store, o que é uma segunda fonte de verdade do mesmo dado.
+
+
+    Escopo:
+
+    - Ler o idioma persistido antes do init do i18next e sincronizar nos dois sentidos.
+
+    - Manter document.documentElement.lang em dia na carga e a cada troca.
+
+    - Aplicar o tema persistido antes da primeira renderização sem derrubar o boot
+    se o localStorage tiver lixo (o JSON.parse de main.jsx hoje é desprotegido).
+
+    - SkillsSection deve ler o idioma da mesma fonte que o resto do app.
+
+
+    Arquivos (exclusivos desta tarefa): frontend/src/main.jsx, frontend/src/i18n/index.js,
+    frontend/src/store/useAppStore.js, frontend/src/components/layout/Navbar.jsx,
+    frontend/src/components/sections/SkillsSection.jsx.
+
+
+    Verificação: testes React de sincronização idioma/tema, incluindo localStorage
+    corrompido.'
+  log:
+  - date: '2026-09-06'
+    text: Executada por subagente dentro da R-001, com propriedade exclusiva de main.jsx,
+      i18n/index.js, store/useAppStore.js, Navbar.jsx e SkillsSection.jsx, para não
+      colidir com as T-008 e T-009 rodando em paralelo.
+  - date: '2026-09-06'
+    text: 'Entregue na R-001. 7 testes em src/test/preferences.test.jsx, com rodada
+      vermelha comprovada antes (5 falhando). Achado que corrigiu a premissa da tarefa:
+      o persist do zustand JÁ trata JSON inválido internamente (toThenable), então
+      o store nunca foi o ponto de falha; quem derrubava o boot era só o JSON.parse
+      cru do main.jsx, que foi removido. Efeito colateral encontrado no caminho de
+      erro: onRehydrateStorage recebia state undefined e o `if (state)` pulava a aplicação
+      do tema, deixando o app com theme dark no estado e sem a classe dark no DOM.'
+  created_at: '2026-09-06T13:33:33.579443Z'
+  updated_at: '2026-09-06T13:47:18.239992Z'
+- id: T-008
+  title: 'Fase 3c: erro, cancelamento e respostas obsoletas nos hooks e no detalhe
+    de projeto'
+  state: review
+  notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes).
+
+
+    Bugs confirmados por leitura:
+
+    - useSkills e useProjects não têm .catch: uma falha de rede vira unhandled rejection
+    e o estado de erro não existe.
+
+    - useProfile e useProjects refazem a busca quando `lang` muda, sem cancelar a
+    anterior nem descartar a resposta antiga; a resposta lenta do idioma anterior
+    sobrescreve a atual.
+
+    - ProjectsSection.openProject não tem try/catch/finally: se a requisição de detalhe
+    falhar, loadingSlug fica preso e o botão daquele card fica desabilitado para sempre.
+    Esse é o "recuperação após falha de detalhe" do resultado verificável.
+
+
+    Contrato acordado para os três hooks: retornar { data, loading, error }. As tarefas
+    de UI (T-009) dependem desse formato.
+
+
+    Nota: o SkillSerializer do backend não traduz nada, então useSkills NÃO deve passar
+    a refazer a busca por idioma. Só falta tratamento de erro e cancelamento.
+
+
+    Arquivos (exclusivos desta tarefa): frontend/src/hooks/useProfile.js, useSkills.js,
+    useProjects.js, frontend/src/components/sections/ProjectsSection.jsx.
+
+
+    Verificação: testes de descarte de resposta obsoleta, de erro de rede em cada
+    hook, e de que o botão de case study volta a funcionar depois de uma falha.'
+  log:
+  - date: '2026-09-06'
+    text: Executada por subagente dentro da R-001, com propriedade exclusiva dos três
+      hooks e do ProjectsSection.jsx.
+  - date: '2026-09-06'
+    text: 'Entregue na R-001. 10 testes em src/test/dataHooks.test.jsx, com rodada
+      vermelha comprovada antes (9 falhando). A questão do refetch por idioma no useSkills
+      foi levantada de novo pelo subagente e ficou resolvida na DEC-003, agora contra
+      o modelo Django e não só contra o serializer. Duplicação consciente mantida:
+      o padrão de AbortController se repete nos três hooks; extrair um useFetch foi
+      descartado porque as três chamadas diferem em dependências e valor inicial.'
+  created_at: '2026-09-06T13:33:41.231807Z'
+  updated_at: '2026-09-06T13:47:21.433355Z'
+- id: T-009
+  title: 'Fase 3d: contrato do perfil e chaves de tradução quebradas'
+  state: review
+  notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes) e do contrato
+    { data, loading, error } da T-008.
+
+
+    Bugs confirmados contra backend/apps/portfolio/serializers.py:
+
+    - O ProfileSerializer devolve `seal_text`, mas HeroSection lê `profile?.rotating_seal_text`,
+    campo que não existe na resposta. O selo giratório sempre cai no fallback "Developer
+    Junior".
+
+    - O serializer devolve `photo`, mas HeroSection tem `src="/profile.jpg"` fixo.
+
+    - O serializer devolve `bio`, mas o "Sobre mim" usa about.text1/about.text2 do
+    i18n e ignora a bio da API.
+
+    - ProjectsSection usa t("projects.caseStudy") e ProjectModal usa t("projects.repo")
+    e t("projects.live"); as chaves existentes em pt.json/en.json são viewCase, viewRepo
+    e viewLive. As três renderizam a chave crua na tela.
+
+    - ProjectsSection tem "Carregando..." fixo em português no botão.
+
+
+    Regra da spec: consumir os valores da API e manter os fallbacks locais só para
+    o que for opcional e vier vazio.
+
+
+    Escolha registrada: corrigir os pontos de chamada para as chaves que já existem,
+    em vez de renomear as chaves do JSON, porque o diff é menor e as chaves atuais
+    são as corretas semanticamente.
+
+
+    Arquivos (exclusivos desta tarefa): frontend/src/components/sections/HeroSection.jsx,
+    frontend/src/components/ui/ProjectModal.jsx. As chaves de estado em locales já
+    entram pela T-006.
+
+
+    Verificação: testes do contrato do perfil (photo, bio, seal_text com e sem valor)
+    e de que nenhuma chave crua de tradução aparece na tela.'
+  log:
+  - date: '2026-09-06'
+    text: Executada por subagente dentro da R-001, com propriedade exclusiva de HeroSection.jsx
+      e ProjectModal.jsx.
+  - date: '2026-09-06'
+    text: 'Entregue na R-001. 9 testes em src/test/profileContract.test.jsx, com rodada
+      vermelha comprovada antes (6 falhando). Três dos nove passavam nos dois estados
+      de propósito: são os casos de fallback, guarda de regressão da regra "o fallback
+      local só entra quando a API não fornece". Achado extra: RotatingSeal tinha dois
+      fallbacks conflitantes, "Backend Developer" no default do parâmetro e "Developer
+      Junior" no ponto de chamada, então o default interno era código morto.'
+  created_at: '2026-09-06T13:33:49.411384Z'
+  updated_at: '2026-09-06T13:47:24.679286Z'

@@ -4,15 +4,15 @@ import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 import Aurora from "../ui/Aurora";
 
-function RotatingSeal({ text = "Backend Developer" }) {
-  const safeText = text || "Backend Developer";
+function RotatingSeal({ text, photo, name }) {
+  const safeText = text || "Developer Junior";
 
   return (
     <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[420px] lg:h-[420px] flex items-center justify-center">
       <div className="absolute w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full overflow-hidden ring-2 ring-sky-500/40">
         <img
-          src="/profile.jpg"
-          alt="Profile"
+          src={photo || "/profile.jpg"}
+          alt={name ? `Foto de ${name}` : "Foto de perfil"}
           className="w-full h-full object-cover"
         />
       </div>
@@ -43,7 +43,7 @@ function RotatingSeal({ text = "Backend Developer" }) {
 export default function HeroSection() {
   /* Corpo Principal */
   const { t } = useTranslation();
-  const { data: profile, loading } = useProfile();
+  const { data: profile, loading, error } = useProfile();
 
   if (loading) {
     return (
@@ -75,6 +75,11 @@ export default function HeroSection() {
         <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-12">
           {/* Lado Esquerdo: Texto */}
           <div className="flex-1 space-y-5 text-center md:text-left">
+            {error && (
+              <p role="status" className="text-sm text-amber-600 dark:text-amber-400">
+                {t("states.error")}
+              </p>
+            )}
             <p className="ml-1 text-primary-600 font-mono text-2xl tracking-widest uppercase animate-fade-up">
               {t("hero.greeting")}
             </p>
@@ -139,7 +144,9 @@ export default function HeroSection() {
             style={{ animationDelay: "0.2s", opacity: 0 }}
           >
             <RotatingSeal
-              text={profile?.rotating_seal_text || "Developer Junior"}
+              text={profile?.seal_text}
+              photo={profile?.photo}
+              name={profile?.full_name}
             />
           </div>
         </div>
@@ -156,12 +163,21 @@ export default function HeroSection() {
             </h2>
           </div>
           <div className="max-full space-y-5">
-            <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
-              {t("about.text1")}
-            </p>
-            <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
-              {t("about.text2")}
-            </p>
+            {/* A bio da API já vem traduzida; o texto local só cobre a ausência dela. */}
+            {profile?.bio ? (
+              <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
+                {profile.bio}
+              </p>
+            ) : (
+              <>
+                <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {t("about.text1")}
+                </p>
+                <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {t("about.text2")}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>

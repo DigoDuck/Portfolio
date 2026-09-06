@@ -25,6 +25,7 @@ export default function ProjectModal({ project, onClose }) {
         <div className="flex items-center justify-between p-5 border-b border-brand-beige/10">
           <h2 className="font-bold text-brand-white">{project.title}</h2>
           <button onClick={onClose}
+                  aria-label={t('projects.close')}
                   className="text-brand-beige/50 hover:text-brand-white transition-colors px-2">
             ✕
           </button>
@@ -47,13 +48,13 @@ export default function ProjectModal({ project, onClose }) {
           {project.repo_url && (
             <a href={project.repo_url} target="_blank" rel="noopener noreferrer"
                className="flex-1 text-center py-2.5 bg-brand-blue hover:bg-brand-navy text-brand-white rounded-lg text-sm font-medium transition-colors">
-              {t('projects.repo')} →
+              {t('projects.viewRepo')} →
             </a>
           )}
           {project.live_url && (
             <a href={project.live_url} target="_blank" rel="noopener noreferrer"
                className="flex-1 text-center py-2.5 border border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-brand-white rounded-lg text-sm font-medium transition-colors">
-              {t('projects.live')} ↗
+              {t('projects.viewLive')} ↗
             </a>
           )}
         </div>

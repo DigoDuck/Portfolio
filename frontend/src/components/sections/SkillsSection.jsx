@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useSkills } from "@/hooks/useSkills";
 import { useInView } from "@/hooks/useInView";
+import { useAppStore } from "@/store/useAppStore";
 
 const CATEGORY_CONFIG = {
   backend: { label_pt: "Back-end", label_en: "Back-end", icon: "⚙️" },
@@ -73,9 +74,9 @@ function CategoryBlock({ category, skills, lang }) {
 }
 
 export default function SkillsSection() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: skills } = useSkills();
-  const lang = i18n.language;
+  const lang = useAppStore((state) => state.lang);
   const { ref, inView } = useInView();
 
   const grouped = skills.reduce((acc, skill) => {
