@@ -28,4 +28,6 @@ Thumbs.db
 .vscode/
 .idea/
 .worktrees/
-EOF
+
+# Config local de ferramentas (caminho absoluto da máquina)
+.mcp.json
