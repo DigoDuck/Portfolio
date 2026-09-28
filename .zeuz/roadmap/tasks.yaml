@@ -278,7 +278,7 @@ tasks:
   updated_at: '2026-09-28T13:09:41.537919Z'
 - id: T-007
   title: 'Fase 3b: sincronizar idioma e tema persistidos com i18next e o documento'
-  state: review
+  state: done
   notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes).
 
 
@@ -321,8 +321,14 @@ tasks:
       cru do main.jsx, que foi removido. Efeito colateral encontrado no caminho de
       erro: onRehydrateStorage recebia state undefined e o `if (state)` pulava a aplicação
       do tema, deixando o app com theme dark no estado e sem a classe dark no DOM.'
+  - date: '2026-09-28'
+    text: 'Aprovada pelo usuário em 2026-09-28 sem conferência do "Done when" nesta
+      sessão: a leitura da task foi bloqueada pelo classificador do modo automático.
+      O escopo dela (idioma e tema sincronizados antes do primeiro render) existe
+      no código (i18n/index.js, useAppStore.js) e é coberto por preferences.test.jsx,
+      que continua verde.'
   created_at: '2026-09-06T13:33:33.579443Z'
-  updated_at: '2026-09-06T13:47:18.239992Z'
+  updated_at: '2026-09-28T14:10:17.362497Z'
 - id: T-008
   title: 'Fase 3c: erro, cancelamento e respostas obsoletas nos hooks e no detalhe
     de projeto'
