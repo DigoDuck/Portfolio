@@ -278,7 +278,7 @@ tasks:
   updated_at: '2026-09-28T13:09:41.537919Z'
 - id: T-007
   title: 'Fase 3b: sincronizar idioma e tema persistidos com i18next e o documento'
-  state: review
+  state: done
   notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes).
 
 
@@ -321,8 +321,14 @@ tasks:
       cru do main.jsx, que foi removido. Efeito colateral encontrado no caminho de
       erro: onRehydrateStorage recebia state undefined e o `if (state)` pulava a aplicação
       do tema, deixando o app com theme dark no estado e sem a classe dark no DOM.'
+  - date: '2026-09-28'
+    text: 'Aprovada pelo usuário em 2026-09-28 sem conferência do "Done when" nesta
+      sessão: a leitura da task foi bloqueada pelo classificador do modo automático.
+      O escopo dela (idioma e tema sincronizados antes do primeiro render) existe
+      no código (i18n/index.js, useAppStore.js) e é coberto por preferences.test.jsx,
+      que continua verde.'
   created_at: '2026-09-06T13:33:33.579443Z'
-  updated_at: '2026-09-06T13:47:18.239992Z'
+  updated_at: '2026-09-28T14:10:17.362497Z'
 - id: T-008
   title: 'Fase 3c: erro, cancelamento e respostas obsoletas nos hooks e no detalhe
     de projeto'
@@ -519,3 +525,37 @@ tasks:
       Shop continua na lista e revisar o README do Warden, que está desatualizado.'
   created_at: '2026-09-28T13:58:59.006830Z'
   updated_at: '2026-09-28T14:06:41.763126Z'
+- id: T-012
+  title: Corrigir o manage.py test que encontra 0 testes quando rodado da raiz
+  state: review
+  role: coding
+  notes: 'Achado na R-002: `python backend/manage.py test`, rodado da raiz do repositório
+    exatamente como a spec do hardening escreve, encontra 0 testes e sai com código
+    0. De dentro de backend/, roda os 14. Causa: o DiscoverRunner do Django, sem rótulo,
+    descobre a partir do cwd. Com rótulo pontuado (apps.portfolio.tests...) funciona
+    de qualquer lugar. Não há CI no repositório, então o risco é quem roda à mão confiar
+    num verde que não testou nada.
+
+
+    Correção pretendida: um TEST_RUNNER que, sem rótulo, descobre a partir de BASE_DIR,
+    independente do cwd. Não mexer em manage.py (um chdir global mudaria a semântica
+    de caminhos relativos de outros comandos).
+
+
+    Feito quando: da raiz, `python backend/manage.py test` roda os mesmos testes que
+    de dentro de backend/, e um teste cobre isso.
+
+
+    Branch empilhada sobre feat/interface-redesign (PR #4) para o tasks.yaml do ZEUZ
+    não divergir entre os dois PRs. (Recriada: uma primeira versão desta task se perdeu
+    numa troca de branch com o tasks.yaml alterado.)'
+  log:
+  - date: '2026-09-28'
+    text: 'Feita na R-004 (commit c9341ac). Done when conferido: da raiz roda os mesmos
+      15 testes que de dentro de backend/, e test_test_runner.py cobre isso. Mesclar
+      depois do PR #4 (branch empilhada).'
+  - date: '2026-09-28'
+    text: 'Enviada no PR https://github.com/DigoDuck/Portfolio/pull/5, empilhado sobre
+      o PR #4. Não marcar done antes do merge.'
+  created_at: '2026-09-28T14:12:11.211500Z'
+  updated_at: '2026-09-28T14:13:36.248441Z'

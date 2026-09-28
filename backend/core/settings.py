@@ -115,3 +115,6 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Descobre os testes a partir de backend/, qualquer que seja o cwd (ver core/test_runner.py).
+TEST_RUNNER = 'core.test_runner.BackendDiscoverRunner'
