@@ -554,5 +554,8 @@ tasks:
     text: 'Feita na R-004 (commit c9341ac). Done when conferido: da raiz roda os mesmos
       15 testes que de dentro de backend/, e test_test_runner.py cobre isso. Mesclar
       depois do PR #4 (branch empilhada).'
+  - date: '2026-09-28'
+    text: 'Enviada no PR https://github.com/DigoDuck/Portfolio/pull/5, empilhado sobre
+      o PR #4. Não marcar done antes do merge.'
   created_at: '2026-09-28T14:12:11.211500Z'
-  updated_at: '2026-09-28T14:13:12.145496Z'
+  updated_at: '2026-09-28T14:13:36.248441Z'
