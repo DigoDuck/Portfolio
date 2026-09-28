@@ -525,3 +525,34 @@ tasks:
       Shop continua na lista e revisar o README do Warden, que está desatualizado.'
   created_at: '2026-09-28T13:58:59.006830Z'
   updated_at: '2026-09-28T14:06:41.763126Z'
+- id: T-012
+  title: Corrigir o manage.py test que encontra 0 testes quando rodado da raiz
+  state: review
+  role: coding
+  notes: 'Achado na R-002: `python backend/manage.py test`, rodado da raiz do repositório
+    exatamente como a spec do hardening escreve, encontra 0 testes e sai com código
+    0. De dentro de backend/, roda os 14. Causa: o DiscoverRunner do Django, sem rótulo,
+    descobre a partir do cwd. Com rótulo pontuado (apps.portfolio.tests...) funciona
+    de qualquer lugar. Não há CI no repositório, então o risco é quem roda à mão confiar
+    num verde que não testou nada.
+
+
+    Correção pretendida: um TEST_RUNNER que, sem rótulo, descobre a partir de BASE_DIR,
+    independente do cwd. Não mexer em manage.py (um chdir global mudaria a semântica
+    de caminhos relativos de outros comandos).
+
+
+    Feito quando: da raiz, `python backend/manage.py test` roda os mesmos testes que
+    de dentro de backend/, e um teste cobre isso.
+
+
+    Branch empilhada sobre feat/interface-redesign (PR #4) para o tasks.yaml do ZEUZ
+    não divergir entre os dois PRs. (Recriada: uma primeira versão desta task se perdeu
+    numa troca de branch com o tasks.yaml alterado.)'
+  log:
+  - date: '2026-09-28'
+    text: 'Feita na R-004 (commit c9341ac). Done when conferido: da raiz roda os mesmos
+      15 testes que de dentro de backend/, e test_test_runner.py cobre isso. Mesclar
+      depois do PR #4 (branch empilhada).'
+  created_at: '2026-09-28T14:12:11.211500Z'
+  updated_at: '2026-09-28T14:13:12.145496Z'
