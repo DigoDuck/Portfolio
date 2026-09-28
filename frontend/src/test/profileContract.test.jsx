@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import "@/i18n";
@@ -86,6 +86,43 @@ describe("a página consome o contrato do perfil", () => {
     const img = await screen.findByRole("img");
     expect(img).toHaveAttribute("src", profileFromApi.photo);
     expect(img).toHaveAccessibleName(/Diogo Ribeiro/);
+  });
+
+  it("volta para /profile.jpg quando a foto da API não carrega", async () => {
+    // Produção: /media/ dá 404 (o Django não serve mídia com DEBUG=False), e a
+    // foto aparecia durante o carregamento e sumia quando a API respondia.
+    mockProfile();
+    render(<App />);
+
+    const img = await screen.findByRole("img", { name: /Diogo Ribeiro/ });
+    expect(img).toHaveAttribute("src", profileFromApi.photo);
+
+    fireEvent.error(img);
+
+    expect(img).toHaveAttribute("src", "/profile.jpg");
+  });
+
+  it("esconde a thumbnail do projeto quando a imagem não carrega", async () => {
+    mockGet.mockImplementation((url) =>
+      Promise.resolve({
+        data:
+          url === "/profile"
+            ? profileFromApi
+            : url === "/projects/"
+              ? [{ id: 1, slug: "norby", title: "Norby", featured: true, short_description: "x",
+                   thumbnail: "http://localhost:8000/media/projects/norby.webp", skills: [] }]
+              : [],
+      }),
+    );
+    const { container } = render(<App />);
+
+    await screen.findByRole("heading", { level: 3, name: /Norby/ });
+    const thumb = container.querySelector('img[src$="norby.webp"]');
+    expect(thumb).not.toBeNull();
+
+    fireEvent.error(thumb);
+
+    expect(container.querySelector('img[src$="norby.webp"]')).toBeNull();
   });
 
   it("cai em /profile.jpg quando photo vem nula", async () => {
