@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import Section from "@/components/layout/Section";
+import Spotlight from "@/components/ui/Spotlight";
 
 export default function AboutSection({ profile }) {
   const { t } = useTranslation();
@@ -8,13 +9,16 @@ export default function AboutSection({ profile }) {
 
   return (
     <Section id="about" title={t("about.title")}>
-      <div className="max-w-[65ch] space-y-5 text-lead">
-        {paragraphs.map((text) => (
-          <p key={text} className="whitespace-pre-line">
-            {text}
-          </p>
-        ))}
-      </div>
+      {/* space-y num filho interno: no Spotlight, a cópia viraria mais um irmão espaçado. */}
+      <Spotlight className="max-w-[65ch] text-lead">
+        <div className="space-y-5">
+          {paragraphs.map((text) => (
+            <p key={text} className="whitespace-pre-line">
+              {text}
+            </p>
+          ))}
+        </div>
+      </Spotlight>
     </Section>
   );
 }
