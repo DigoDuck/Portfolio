@@ -12,7 +12,9 @@ const ProjectModal = lazy(() => import("@/components/ui/ProjectModal"));
 
 function ProjectRow({ project, onOpen, loading, failed }) {
   const { t } = useTranslation();
-  const showThumb = project.featured && project.thumbnail;
+  // Imagem que não carrega some, em vez de deixar um ícone de imagem quebrada.
+  const [thumbFailed, setThumbFailed] = useState(false);
+  const showThumb = project.featured && project.thumbnail && !thumbFailed;
 
   return (
     <li className="group relative border-t border-rule">
@@ -28,6 +30,7 @@ function ProjectRow({ project, onOpen, loading, failed }) {
               src={project.thumbnail}
               alt=""
               loading="lazy"
+              onError={() => setThumbFailed(true)}
               className="mb-5 aspect-[16/10] w-full max-w-md border border-rule bg-surface object-cover"
             />
           )}

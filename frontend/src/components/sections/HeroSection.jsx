@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import ErrorNote from "@/components/ui/ErrorNote";
 import SocialLinks from "@/components/ui/SocialLinks";
@@ -9,6 +10,9 @@ const statusFrom = (sealText) => sealText?.replace(/[\s·]+$/, "");
 export default function HeroSection({ profile, loading, error }) {
   const { t } = useTranslation();
   const name = profile?.full_name;
+  // A mídia do backend pode falhar (em produção, /media/ dá 404 até existir um
+  // storage persistente, ver T-002). Nesse caso, fica a foto estática do build.
+  const [photoFailed, setPhotoFailed] = useState(false);
 
   return (
     <section
@@ -57,7 +61,8 @@ export default function HeroSection({ profile, loading, error }) {
 
         <div className="rise md:col-span-4" style={{ "--i": 2 }}>
           <img
-            src={profile?.photo || "/profile.jpg"}
+            src={(!photoFailed && profile?.photo) || "/profile.jpg"}
+            onError={() => setPhotoFailed(true)}
             alt={name ? t("hero.photoAlt", { name }) : t("hero.photoAltAnon")}
             width="480"
             height="480"
