@@ -3,6 +3,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 import Aurora from "../ui/Aurora";
+import { prefersReducedMotion } from "@/utils/motion";
 
 function RotatingSeal({ text, photo, name }) {
   const safeText = text || "Developer Junior";
@@ -61,15 +62,17 @@ export default function HeroSection() {
       id="home"
       className="min-h-screen flex items-center relative overflow-hidden"
     >
-      {/* Efeito Aurora de Fundo */}
-      <div className="absolute inset-0 z-0 opacity-80 dark:opacity-40 transition-opacity duration-300">
-        <Aurora
-          colorStops={["#1f93ff", "#321986", "#0dd7f2"]}
-          blend={0.5}
-          amplitude={1.0}
-          speed={1}
-        />
-      </div>
+      {/* Efeito Aurora de Fundo: animação WebGL contínua, some com movimento reduzido */}
+      {!prefersReducedMotion() && (
+        <div className="absolute inset-0 z-0 opacity-80 dark:opacity-40 transition-opacity duration-300">
+          <Aurora
+            colorStops={["#1f93ff", "#321986", "#0dd7f2"]}
+            blend={0.5}
+            amplitude={1.0}
+            speed={1}
+          />
+        </div>
+      )}
 
       <div className="container mx-auto px-10 pt-28 pb-20 relative z-10">
         <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-12">

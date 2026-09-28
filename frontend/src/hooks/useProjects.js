@@ -3,9 +3,8 @@ import api from '../api/client'
 import { useAppStore } from '../store/useAppStore'
 
 export function useProjects() {
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  // Mesmo formato do useProfile: `loading` é derivado do idioma da resposta.
+  const [result, setResult] = useState({ lang: null, data: [], error: null })
   const lang = useAppStore((s) => s.lang)
 
   useEffect(() => {
@@ -13,25 +12,22 @@ export function useProjects() {
     // anterior e `signal.aborted` descarta a resposta que chegar atrasada,
     // para que a do idioma antigo não sobrescreva a do idioma atual.
     const controller = new AbortController()
-    setLoading(true)
-    setError(null)
 
     api
       .get('/projects/', { signal: controller.signal })
       .then((res) => {
         if (controller.signal.aborted) return
-        setData(res.data)
-        setLoading(false)
+        setResult({ lang, data: res.data, error: null })
       })
       .catch((err) => {
         // Cancelamento não é erro: quem cancelou já iniciou outra busca.
         if (controller.signal.aborted) return
-        setError(err)
-        setLoading(false)
+        setResult((prev) => ({ lang, data: prev.data, error: err }))
       })
 
     return () => controller.abort()
   }, [lang])
 
-  return { data, loading, error }
+  const loading = result.lang !== lang
+  return { data: result.data, loading, error: loading ? null : result.error }
 }

@@ -40,6 +40,7 @@ export default function Navbar() {
 
           <button
             onClick={toggleLang}
+            aria-label={t("a11y.switchLanguage")}
             className="text-base font-mono px-4 py-2 border border-slate-700 dark:border-white/20 rounded hover:border-slate-500 dark:hover:border-white/50 text-slate-700 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-all"
           >
             {lang === "pt" ? "PT" : "EN"}
@@ -48,14 +49,16 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             className="p-2 text-3xl rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all"
-            aria-label="Toggle theme"
+            aria-label={t("a11y.darkMode")}
+            aria-pressed={theme === "dark"}
           >
-            {theme === "dark" ? "🌙" : "☀️"}
+            <span aria-hidden="true">{theme === "dark" ? "🌙" : "☀️"}</span>
           </button>
         </div>
         <div className="flex md:hidden items-center gap-3">
           <button
             onClick={toggleLang}
+            aria-label={t("a11y.switchLanguage")}
             className="text-sm font-mono px-3 py-1.5 border border-white/20 rounded text-white/60 hover:text-white transition-all"
           >
             {lang === "pt" ? "PT" : "EN"}
@@ -64,12 +67,17 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             className="p-2 text-xl text-white/60 hover:text-white transition-all"
+            aria-label={t("a11y.darkMode")}
+            aria-pressed={theme === "dark"}
           >
-            {theme === "dark" ? "🌙" : "☀️"}
+            <span aria-hidden="true">{theme === "dark" ? "🌙" : "☀️"}</span>
           </button>
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={t("a11y.menu")}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
             className="p-2 text-white/60 hover:text-white transition-all"
           >
             <div className="w-6 flex flex-col gap-1.5">
@@ -88,6 +96,8 @@ export default function Navbar() {
       </div>
 
       <div
+        id="mobile-menu"
+        inert={!menuOpen}
         className={`md:hidden transition-all duration-300 overflow-hidden ${
           menuOpen ? "max-h-60 pb-4" : "max-h-0"
         }`}

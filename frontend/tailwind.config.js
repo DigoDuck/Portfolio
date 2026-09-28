@@ -31,7 +31,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Prompt Regular", "system-ui", "sans-serif"],
+        sans: ["Prompt", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       animation: {

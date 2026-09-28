@@ -34,5 +34,10 @@
   "states": {
     "loading": "Carregando…",
     "error": "Não foi possível carregar o conteúdo."
+  },
+  "a11y": {
+    "switchLanguage": "PT, mudar idioma para inglês",
+    "darkMode": "Modo escuro",
+    "menu": "Menu"
   }
 }

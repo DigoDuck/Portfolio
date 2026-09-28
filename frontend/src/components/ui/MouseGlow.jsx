@@ -27,6 +27,7 @@ export default function MouseGlow() {
   return (
     <div
       ref={blobRef}
+      data-mouse-glow
       className="pointer-events-none fixed top-0 left-0 w-52 h-52 bg-sky-500/20 dark:bg-sky-400/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 z-0"
     />
   );
