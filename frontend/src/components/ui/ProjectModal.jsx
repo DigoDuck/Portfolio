@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useId, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useTranslation } from 'react-i18next'
+import { FiX } from 'react-icons/fi'
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
@@ -46,26 +47,26 @@ export default function ProjectModal({ project, onClose }) {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 sm:items-center sm:p-6"
          onClick={onClose}>
       <div ref={dialogRef}
            role="dialog"
            aria-modal="true"
            aria-labelledby={titleId}
-           className="w-full max-w-2xl max-h-[88vh] flex flex-col bg-[#191013] border border-brand-beige/10 rounded-2xl shadow-2xl"
+           className="rise flex max-h-[92vh] w-full max-w-3xl flex-col border border-rule bg-bg text-ink"
            onClick={(e) => e.stopPropagation()}>
 
-        <div className="flex items-center justify-between p-5 border-b border-brand-beige/10">
-          <h2 id={titleId} className="font-bold text-brand-white">{project.title}</h2>
+        <div className="flex items-start justify-between gap-6 border-b border-rule px-5 py-4 sm:px-8 sm:py-6">
+          <h2 id={titleId} className="text-title font-bold">{project.title}</h2>
           <button ref={closeRef}
                   onClick={onClose}
                   aria-label={t('projects.close')}
-                  className="text-brand-beige/50 hover:text-brand-white transition-colors px-2">
-            <span aria-hidden="true">✕</span>
+                  className="-mr-2 p-2 text-xl transition-colors hover:text-signal">
+            <FiX aria-hidden="true" />
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1 p-5">
+        <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">
           <article className="markdown">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {project.case_study}
@@ -73,20 +74,24 @@ export default function ProjectModal({ project, onClose }) {
           </article>
         </div>
 
-        <div className="flex gap-3 p-5 border-t border-brand-beige/10">
-          {project.repo_url && (
-            <a href={project.repo_url} target="_blank" rel="noopener noreferrer"
-               className="flex-1 text-center py-2.5 bg-brand-blue hover:bg-brand-navy text-brand-white rounded-lg text-sm font-medium transition-colors">
-              {t('projects.viewRepo')} →
-            </a>
-          )}
-          {project.live_url && (
-            <a href={project.live_url} target="_blank" rel="noopener noreferrer"
-               className="flex-1 text-center py-2.5 border border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-brand-white rounded-lg text-sm font-medium transition-colors">
-              {t('projects.viewLive')} ↗
-            </a>
-          )}
-        </div>
+        {(project.repo_url || project.live_url) && (
+          <div className="flex flex-col gap-3 border-t border-rule px-5 py-4 sm:flex-row sm:px-8 sm:py-6">
+            {project.repo_url && (
+              <a href={project.repo_url} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                {t('projects.viewRepo')}{" "}
+                <span aria-hidden="true">↗</span>{" "}
+                <span className="sr-only">{t('a11y.newTab')}</span>
+              </a>
+            )}
+            {project.live_url && (
+              <a href={project.live_url} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                {t('projects.viewLive')}{" "}
+                <span aria-hidden="true">↗</span>{" "}
+                <span className="sr-only">{t('a11y.newTab')}</span>
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

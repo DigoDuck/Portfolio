@@ -2,90 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-/* A fonte Prompt é carregada no index.html: @import depois do @tailwind é inválido. */
+/* As fontes são carregadas no index.html: @import depois do @tailwind é inválido. */
 
+/* Tokens em OKLCH, no formato "L C H" (ver tailwind.config.js). Contraste
+   conferido: texto >= 4.5:1 sobre bg e surface nos dois temas. */
 @layer base {
-  html {
-    @apply transition-colors duration-300; /* Transição suave na mudança de tema */
+  :root {
+    --bg: 0.985 0 0;
+    --surface: 0.955 0.002 25;
+    --ink: 0.2 0.008 25;
+    --muted: 0.46 0.008 25;
+    --rule: 0.87 0.004 25;
+    --signal: 0.555 0.215 28;
+    --on-signal: 0.99 0 0;
+    color-scheme: light;
   }
-  body {
-    background-color: #f4f4f2;
-    color: #191013;
-    @apply font-sans antialiased;
+
+  .dark {
+    --bg: 0.165 0.006 25;
+    --surface: 0.205 0.007 25;
+    --ink: 0.95 0.003 25;
+    --muted: 0.72 0.006 25;
+    --rule: 0.32 0.007 25;
+    --signal: 0.665 0.2 28;
+    --on-signal: 0.16 0.006 25;
+    color-scheme: dark;
   }
+
   html {
     scroll-behavior: smooth;
   }
 
-  .dark body {
-    background-color: #191013;
-    color: #f4f4f2;
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-4 outline-signal;
   }
 }
 
-/* Markdown do estudo de caso. Estilos próprios em vez do plugin Typography.
-   O modal tem sempre fundo escuro, por isso as cores não seguem o tema. */
 @layer components {
+  /* Única ação com a cor de sinal: o caminho até os estudos de caso. */
+  .btn-signal {
+    @apply inline-flex items-center gap-2 bg-signal px-5 py-3 font-semibold text-on-signal transition-colors duration-200 hover:bg-ink hover:text-bg;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 border border-ink px-5 py-3 font-semibold transition-colors duration-200 hover:bg-ink hover:text-bg;
+  }
+
+  .link {
+    @apply font-semibold underline decoration-rule decoration-2 underline-offset-4 transition-colors duration-200 hover:decoration-signal;
+  }
+
+  .skeleton {
+    @apply block animate-pulse bg-surface;
+  }
+
+  /* Entrada do hero: uma sequência curta, e o conteúdo já nasce visível no fim
+     (fill-mode both). --i define a posição na sequência. */
+  .rise {
+    animation: rise 700ms cubic-bezier(0.25, 1, 0.5, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  /* Markdown do estudo de caso. Estilos próprios em vez do plugin Typography. */
   .markdown {
-    @apply text-sm leading-relaxed text-brand-beige;
+    @apply max-w-[68ch] leading-relaxed text-ink;
   }
-  .markdown > * + * {
-    @apply mt-4;
-  }
+  .markdown > * + * { @apply mt-4; }
   .markdown h1,
   .markdown h2,
-  .markdown h3 {
-    @apply font-bold text-brand-white;
-  }
-  .markdown h1 { @apply text-xl; }
-  .markdown h2 { @apply text-lg mt-6; }
-  .markdown h3 { @apply text-base mt-5; }
-  .markdown strong { @apply font-bold text-brand-white; }
-  .markdown a { @apply text-brand-blue underline underline-offset-2 hover:text-brand-white; }
-  .markdown ul { @apply list-disc pl-5 space-y-1; }
-  .markdown ol { @apply list-decimal pl-5 space-y-1; }
-  .markdown blockquote { @apply border-l-2 border-brand-blue pl-4 italic; }
-  .markdown code { @apply font-mono text-brand-blue; }
-  .markdown pre { @apply overflow-x-auto rounded-lg bg-black/40 p-4; }
-  .markdown pre code { @apply text-brand-beige; }
-  .markdown hr { @apply border-brand-beige/10; }
-  .markdown table { @apply w-full border-collapse text-left; }
+  .markdown h3 { @apply font-bold tracking-tight; }
+  .markdown h1 { @apply text-2xl; }
+  .markdown h2 { @apply mt-10 text-xl; }
+  .markdown h3 { @apply mt-8 text-lg; }
+  .markdown strong { @apply font-bold; }
+  .markdown a { @apply link; }
+  .markdown ul { @apply list-disc space-y-1 pl-5 marker:text-muted; }
+  .markdown ol { @apply list-decimal space-y-1 pl-5 marker:text-muted; }
+  .markdown blockquote { @apply border-y border-rule py-3 text-muted; }
+  .markdown code { @apply bg-surface px-1 py-0.5 font-mono text-[0.9em]; }
+  .markdown pre { @apply overflow-x-auto border border-rule bg-surface p-4 text-sm; }
+  .markdown pre code { @apply bg-transparent p-0; }
+  .markdown hr { @apply border-rule; }
+  .markdown table { @apply w-full border-collapse text-left text-sm; }
   .markdown th,
-  .markdown td { @apply border border-brand-beige/10 px-3 py-2; }
-  .markdown th { @apply font-semibold text-brand-white; }
+  .markdown td { @apply border-b border-rule py-2 pr-4; }
+  .markdown th { @apply font-semibold; }
 }
 
-@layer utilities {
-  .gradient-animated {
-    background-size: 300% 300%;
-    animation: gradient 8s ease infinite;
-  }
-}
-
-.gradient-animated {
-  background-size: 200% 200% !important;
-  animation: moveGradient 4s ease infinite;
-}
-
-@keyframes moveGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Movimento reduzido: congela as animações CSS contínuas (selo, pulse, gradiente)
-   e encurta as de entrada. Aurora e MouseGlow nem montam, ver utils/motion.js. */
+/* Movimento reduzido: congela as animações contínuas (esqueleto de carregamento)
+   e zera as de entrada e as transições. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }

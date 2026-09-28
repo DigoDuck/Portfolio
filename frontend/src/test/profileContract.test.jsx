@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import "@/i18n";
-import HeroSection from "@/components/sections/HeroSection";
+import App from "@/App";
 import ProjectModal from "@/components/ui/ProjectModal";
 
 // Fronteira HTTP: só o axios é falso. O hook useProfile e o api/client rodam de verdade.
@@ -17,9 +17,6 @@ vi.mock("axios", () => ({
   },
 }));
 
-// Aurora desenha com WebGL (ogl) e o jsdom não tem contexto GL.
-vi.mock("@/components/ui/Aurora", () => ({ default: () => null }));
-
 // Espelha o ProfileSerializer: role, bio e seal_text já chegam traduzidos.
 const profileFromApi = {
   id: 1,
@@ -33,29 +30,58 @@ const profileFromApi = {
   seal_text: "Backend Python · Django",
 };
 
+// O App busca perfil, projetos e habilidades; só o perfil importa aqui.
 function mockProfile(overrides = {}) {
-  mockGet.mockResolvedValue({ data: { ...profileFromApi, ...overrides } });
+  mockGet.mockImplementation((url) =>
+    Promise.resolve({
+      data: url === "/profile" ? { ...profileFromApi, ...overrides } : [],
+    }),
+  );
 }
 
-describe("HeroSection consome o contrato do perfil", () => {
-  it("usa seal_text da API no selo giratório, não o fallback local", async () => {
+describe("a página consome o contrato do perfil", () => {
+  it("usa seal_text da API na linha de status, não o fallback local", async () => {
     mockProfile();
-    render(<HeroSection />);
+    render(<App />);
 
     expect(await screen.findByText(/Backend Python · Django/)).toBeInTheDocument();
-    expect(screen.queryByText(/Developer Junior/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Aberto a oportunidades")).not.toBeInTheDocument();
   });
 
-  it("cai no fallback do selo quando seal_text vem vazio", async () => {
+  it("cai no fallback do status quando seal_text vem vazio", async () => {
     mockProfile({ seal_text: "" });
-    render(<HeroSection />);
+    render(<App />);
 
-    expect(await screen.findByText(/Developer Junior/)).toBeInTheDocument();
+    expect(await screen.findByText("Aberto a oportunidades")).toBeInTheDocument();
+  });
+
+  it("tira a emenda ' · ' que o seal_text trazia do selo circular", async () => {
+    mockProfile({ seal_text: "Disponível para oportunidades · " });
+    render(<App />);
+
+    expect(await screen.findByText("Disponível para oportunidades")).toBeInTheDocument();
+  });
+
+  it("busca o perfil uma vez só para hero, sobre, contato e navbar", async () => {
+    mockProfile();
+    render(<App />);
+
+    await screen.findByRole("heading", { level: 1, name: "Diogo Ribeiro" });
+    expect(mockGet.mock.calls.filter(([url]) => url === "/profile")).toHaveLength(1);
+    expect(screen.getByRole("link", { name: profileFromApi.email })).toHaveAttribute(
+      "href",
+      `mailto:${profileFromApi.email}`,
+    );
+    // Hero e rodapé; o aviso de nova aba precisa de espaço antes, senão o leitor
+    // de tela lê "GitHub(abre em nova aba)".
+    expect(
+      screen.getAllByRole("link", { name: "GitHub (abre em nova aba)" }),
+    ).toHaveLength(2);
   });
 
   it("usa a URL de photo como veio da API", async () => {
     mockProfile();
-    render(<HeroSection />);
+    render(<App />);
 
     const img = await screen.findByRole("img");
     expect(img).toHaveAttribute("src", profileFromApi.photo);
@@ -64,14 +90,14 @@ describe("HeroSection consome o contrato do perfil", () => {
 
   it("cai em /profile.jpg quando photo vem nula", async () => {
     mockProfile({ photo: null });
-    render(<HeroSection />);
+    render(<App />);
 
     expect(await screen.findByRole("img")).toHaveAttribute("src", "/profile.jpg");
   });
 
   it("mostra a bio da API no lugar do texto local", async () => {
     mockProfile();
-    render(<HeroSection />);
+    render(<App />);
 
     expect(await screen.findByText(profileFromApi.bio)).toBeInTheDocument();
     expect(screen.queryByText(/Sou um Desenvolvedor Full-Stack/)).not.toBeInTheDocument();
@@ -79,20 +105,20 @@ describe("HeroSection consome o contrato do perfil", () => {
 
   it("mantém o texto local do i18n quando a bio vem vazia", async () => {
     mockProfile({ bio: "" });
-    render(<HeroSection />);
+    render(<App />);
 
     expect(await screen.findByText(/Sou um Desenvolvedor Full-Stack/)).toBeInTheDocument();
   });
 
   it("segue de pé com os fallbacks e avisa o erro quando a API falha", async () => {
     mockGet.mockRejectedValue(new Error("network down"));
-    render(<HeroSection />);
+    render(<App />);
 
     expect(
-      await screen.findByText("Não foi possível carregar o conteúdo."),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Sobre Mim")).toBeInTheDocument();
-    expect(screen.getByText(/Developer Junior/)).toBeInTheDocument();
+      (await screen.findAllByText("Não foi possível carregar o conteúdo.")).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Sobre" })).toBeInTheDocument();
+    expect(screen.getByText("Aberto a oportunidades")).toBeInTheDocument();
     expect(screen.getByRole("img")).toHaveAttribute("src", "/profile.jpg");
   });
 });
@@ -108,8 +134,8 @@ describe("ProjectModal não vaza chave de tradução", () => {
   it("renderiza os rótulos traduzidos dos botões", () => {
     render(<ProjectModal project={project} onClose={() => {}} />);
 
-    expect(screen.getByText(/Ver Repositório/)).toBeInTheDocument();
-    expect(screen.getByText(/Ver Projeto/)).toBeInTheDocument();
+    expect(screen.getByText(/Ver repositório/)).toBeInTheDocument();
+    expect(screen.getByText(/Ver projeto no ar/)).toBeInTheDocument();
   });
 
   it("não mostra chave crua na tela", () => {

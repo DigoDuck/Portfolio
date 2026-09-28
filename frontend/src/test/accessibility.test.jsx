@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import i18next from "i18next";
@@ -6,18 +6,12 @@ import { initReactI18next, I18nextProvider } from "react-i18next";
 
 import pt from "../i18n/locales/pt.json";
 import api from "../api/client";
-import App from "../App";
+import { readFileSync } from "node:fs";
 import Navbar from "../components/layout/Navbar";
 import ProjectsSection from "../components/sections/ProjectsSection";
 
 vi.mock("../api/client", () => ({
   default: { get: vi.fn() },
-}));
-
-// Aurora desenha com WebGL (ogl) e o jsdom não tem contexto GL. O mock deixa
-// um marcador para os testes de movimento reduzido saberem se ela montou.
-vi.mock("@/components/ui/Aurora", () => ({
-  default: () => <div data-testid="aurora" />,
 }));
 
 const testI18n = i18next.createInstance();
@@ -47,19 +41,6 @@ const detalhe = {
   live_url: "https://example.com",
 };
 
-function mockMatchMedia(reduce) {
-  window.matchMedia = vi.fn((query) => ({
-    matches: reduce && query.includes("prefers-reduced-motion"),
-    media: query,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  }));
-}
-
-afterEach(() => {
-  delete window.matchMedia;
-});
-
 describe("modal de projeto", () => {
   async function abrirModal() {
     const user = userEvent.setup();
@@ -69,10 +50,11 @@ describe("modal de projeto", () => {
     render(<ProjectsSection />, { wrapper: withI18n });
 
     const botao = await screen.findByRole("button", {
-      name: `${pt.projects.viewCase} →`,
+      name: `${pt.projects.viewCase}, Portfolio`,
     });
     await user.click(botao);
-    const dialog = await screen.findByRole("dialog");
+    // Primeiro import() do modal lazy (react-markdown) pode passar de 1 s no jsdom.
+    const dialog = await screen.findByRole("dialog", {}, { timeout: 5000 });
     return { user, botao, dialog };
   }
 
@@ -93,7 +75,7 @@ describe("modal de projeto", () => {
     const { user, dialog } = await abrirModal();
     const fechar = within(dialog).getByRole("button", { name: pt.projects.close });
     const ultimo = within(dialog).getByRole("link", {
-      name: `${pt.projects.viewLive} ↗`,
+      name: `${pt.projects.viewLive} ${pt.a11y.newTab}`,
     });
 
     ultimo.focus();
@@ -130,15 +112,12 @@ describe("Navbar", () => {
   it("dá nome e estado aos controles de idioma e tema", () => {
     render(<Navbar />, { wrapper: withI18n });
 
-    // Versão desktop e versão móvel: os dois pares precisam de nome.
     expect(
-      screen.getAllByRole("button", { name: pt.a11y.switchLanguage }),
-    ).toHaveLength(2);
-    const temas = screen.getAllByRole("button", { name: pt.a11y.darkMode });
-    expect(temas).toHaveLength(2);
-    for (const tema of temas) {
-      expect(tema).toHaveAttribute("aria-pressed");
-    }
+      screen.getByRole("button", { name: pt.a11y.switchLanguage }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: pt.a11y.darkMode }),
+    ).toHaveAttribute("aria-pressed");
   });
 
   it("o botão de menu anuncia se está aberto e tira os links fechados da ordem de Tab", async () => {
@@ -159,29 +138,14 @@ describe("Navbar", () => {
 });
 
 describe("prefers-reduced-motion", () => {
-  it("com movimento reduzido, Aurora e brilho do mouse não montam", async () => {
-    mockMatchMedia(true);
-    api.get.mockImplementation((url) =>
-      Promise.resolve({ data: url === "/profile" ? { full_name: "D" } : [] }),
-    );
+  // O jsdom não avalia media queries de CSS, então o comportamento em si só é
+  // visível no navegador. Este teste guarda a regra contra remoção acidental.
+  it("index.css zera animações e transições quando o usuário pede", () => {
+    const css = readFileSync("src/index.css", "utf8"); // raiz do Vitest: frontend/
+    const bloco = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
 
-    const { container } = render(<App />, { wrapper: withI18n });
-    await screen.findByText("D");
-
-    expect(screen.queryByTestId("aurora")).toBeNull();
-    expect(container.querySelector("[data-mouse-glow]")).toBeNull();
-  });
-
-  it("sem a preferência, os dois efeitos montam", async () => {
-    mockMatchMedia(false);
-    api.get.mockImplementation((url) =>
-      Promise.resolve({ data: url === "/profile" ? { full_name: "D" } : [] }),
-    );
-
-    const { container } = render(<App />, { wrapper: withI18n });
-    await screen.findByText("D");
-
-    expect(screen.getByTestId("aurora")).toBeInTheDocument();
-    expect(container.querySelector("[data-mouse-glow]")).not.toBeNull();
+    expect(bloco).toMatch(/animation-duration:\s*0\.01ms !important/);
+    expect(bloco).toMatch(/transition-duration:\s*0\.01ms !important/);
+    expect(bloco).toMatch(/scroll-behavior:\s*auto/);
   });
 });

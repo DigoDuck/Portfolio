@@ -49,7 +49,10 @@ class Skill(models.Model):
     CATEGORY_CHOICES = [
         ('backend', 'Back-end'),
         ('frontend', 'Front-end'),
-        ('infra', 'Infraestrutura / DB'),
+        ('infra', 'Dados'),
+        ('devops', 'DevOps e ferramentas'),
+        ('testing', 'Testes'),
+        ('ai', 'IA'),
     ]
     
     name = models.CharField(max_length=100)

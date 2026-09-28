@@ -123,7 +123,7 @@ tasks:
   updated_at: '2026-09-28T13:09:41.424797Z'
 - id: T-004
   title: 'Fase 4 do design de hardening: acessibilidade e acabamento do frontend'
-  state: review
+  state: done
   notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção ''Fase
     4'': role=dialog/aria-modal/foco no modal, nomes acessíveis nos controles móveis
     e de tema, prefers-reduced-motion, lazy-load do modal, corrigir a fonte Prompt,
@@ -212,8 +212,13 @@ tasks:
       83c4955 (Fase 4 inteira) e b36baa2 (registros do ZEUZ). O PR também leva o 6704485
       (nota da T-003 que ficou fora do PR #2). Não marcar done antes do merge e de
       uma olhada no navegador.'
+  - date: '2026-09-28'
+    text: '2026-09-28: usuário testou no navegador e confirmou que está ok. Continua
+      em review só até o merge do PR #3.'
+  - date: '2026-09-28'
+    text: '2026-09-28: PR #3 mesclado pelo usuário, depois de ter testado no navegador.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-28T13:23:33.056006Z'
+  updated_at: '2026-09-28T13:34:35.280154Z'
 - id: T-005
   title: 'Migração operacional do backend: Render para Railway'
   state: backlog
@@ -429,3 +434,88 @@ tasks:
       no navegador se a bio cadastrada no admin é o texto desejado no "Sobre mim".'
   created_at: '2026-09-06T13:33:49.411384Z'
   updated_at: '2026-09-28T13:09:41.713801Z'
+- id: T-010
+  title: Melhorar a interface do portfólio com o impeccable
+  state: review
+  notes: 'Pedido do usuário em 2026-09-28, depois de testar a Fase 4 (T-004) no navegador:
+    "use o impeccable para melhorar a interface". Fora do design de hardening, que
+    deixava redesign fora de escopo; esta tarefa é o redesign.
+
+
+    Pré-requisito do impeccable: PRODUCT.md (estratégia) e depois DESIGN.md (sistema
+    visual) na raiz, via entrevista com o usuário (fluxo init).
+
+
+    Pontos já vistos no código, para a fase de crítica:
+
+    - Duas paletas concorrentes: primary (sky do Tailwind) e brand (beige/blue/navy),
+    mais hex soltos (#243a69, #d4cdc5) espalhados nos componentes.
+
+    - As cores da Aurora (#1f93ff, #321986, #0dd7f2) não pertencem a nenhuma das duas
+    paletas.
+
+    - As revelações por scroll escondem o conteúdo (opacity 0) até o IntersectionObserver
+    disparar: se ele não disparar, a seção fica em branco.
+
+    - A grade de habilidades é um grid de cards idênticos; os ícones de categoria
+    são emoji.
+
+    - Navbar no tema claro: os botões móveis usam text-white/60 sobre fundo transparente,
+    com contraste provavelmente insuficiente.
+
+    - A categoria "tools" existe no i18n mas fica fora da ordem de renderização do
+    SkillsSection.
+
+    - Eyebrow "Olá, me chamo" em caixa alta com tracking largo.
+
+    - JetBrains Mono declarada, mas nunca carregada.'
+  log:
+  - date: '2026-09-28'
+    text: 'Brief confirmado pelo usuário em 2026-09-28 (impeccable shape), depois
+      do PRODUCT.md escrito com ele (register brand, público recrutadores e tech leads,
+      ação principal abrir estudo de caso, personalidade precisa/metódica/sóbria,
+      anti-referências template de dev e landing de SaaS, WCAG 2.2 AA).
+
+
+      Direção "quadro de horários suíço": Restrained, off-white neutro, tinta quase
+      preta, uma cor de sinal vermelha só no caminho até os estudos de caso; erros
+      em ícone + texto na cor da tinta, nunca no vermelho. Uma grotesk suíça (nem
+      Helvetica nem Inter) com números tabulares, e mono só no código do estudo de
+      caso. Referências: SBB e Braun/Rams. Claro como padrão, escuro como alternância.
+
+
+      Página inteira, pronta para produção. Ordem: hero, estudos de caso (lista em
+      formato de quadro de horários, com o projeto featured em destaque), sobre, stack
+      (tabela de texto, sem ícones do skillicons.dev), rodapé de contato. Saem Aurora,
+      MouseGlow, o selo giratório, ogl e as revelações por scroll que escondem o conteúdo.
+      O backend não tem campo de ano: a coluna de ano do mockup foi descartada.'
+  - date: '2026-09-28'
+    text: 'Implementada na R-003 (commit a4579bc). Mudanças pedidas durante a execução
+      e já aplicadas: ícones nas tecnologias e nos links sociais, foto redonda, título
+      AI Engineer Full-Stack e categorias de stack do currículo. Falta a revisão do
+      usuário no PR.'
+  - date: '2026-09-28'
+    text: Enviada no PR https://github.com/DigoDuck/Portfolio/pull/4 (branch feat/interface-redesign,
+      commits a4579bc + registros do ZEUZ). Não marcar done antes do merge.
+  created_at: '2026-09-28T13:34:27.809088Z'
+  updated_at: '2026-09-28T14:07:14.993747Z'
+- id: T-011
+  title: Adicionar os projetos Norby, Warden e Pet-Dash ao portfólio
+  state: ready
+  notes: 'Pedido do usuário em 2026-09-28, no meio da T-010. Projetos são registros
+    no banco (model Project, via admin), não código: cada um precisa de title/short_description/case_study
+    em pt e en, slug, repo_url, live_url, skills, thumbnail, featured e order. O conteúdo
+    deve sair dos repositórios reais e ser revisado pelo usuário antes de ir para
+    o banco de produção; nada de estudo de caso inventado.'
+  log:
+  - date: '2026-09-28'
+    text: 'Trabalho feito dentro da R-003 (T-010), sem run próprio: o conteúdo de
+      Norby, PetDash e Warden, mais o perfil (cargo AI Engineer Full-Stack, bio) e
+      as skills do currículo, foi escrito SÓ no banco local, pelo script idempotente
+      content_2026_09.py (scratchpad da sessão). Os estudos de caso são rascunhos
+      tirados dos READMEs (levantamento por subagente) e precisam da revisão do usuário.
+      Pendências: aplicar em produção (admin ou shell), subir as thumbnails (só o
+      Norby tem imagem: assets/dashboard.webp), confirmar se o projeto acadêmico Pet
+      Shop continua na lista e revisar o README do Warden, que está desatualizado.'
+  created_at: '2026-09-28T13:58:59.006830Z'
+  updated_at: '2026-09-28T14:06:41.763126Z'

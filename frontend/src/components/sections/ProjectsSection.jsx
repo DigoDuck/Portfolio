@@ -1,67 +1,95 @@
 import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/hooks/useProjects";
-import { useInView } from "@/hooks/useInView";
+import Section from "@/components/layout/Section";
+import ErrorNote from "@/components/ui/ErrorNote";
+import TechIcon from "@/components/ui/TechIcon";
 import api from "@/api/client";
 
 // Sob demanda: o modal traz react-markdown e remark-gfm, que só servem depois
 // do primeiro clique em um estudo de caso.
 const ProjectModal = lazy(() => import("@/components/ui/ProjectModal"));
 
-function ProjectCard({ project, onOpen, loadingSlug, errorSlug, t, index }) {
-  const { ref, inView } = useInView();
+function ProjectRow({ project, onOpen, loading, failed }) {
+  const { t } = useTranslation();
+  const showThumb = project.featured && project.thumbnail;
 
   return (
-    <div
-      ref={ref}
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(24px)",
-        transition: `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`,
-      }}
-      className="rounded-2xl border border-slate-200 dark:border-brand-beige/10 bg-slate-50 dark:bg-brand-navy/30 hover:border-sky-500/40 dark:hover:border-brand-blue/40 hover:bg-slate-100 dark:hover:bg-brand-navy/50 transition-all hover:shadow-lg hover:shadow-brand-blue/5 overflow-hidden"
-    >
-      {project.thumbnail && (
-        <img
-          src={project.thumbnail}
-          alt={project.title}
-          className="w-full h-48 object-cover"
-        />
-      )}
-      <div className="p-5">
-        <h3 className="font-semibold text-slate-900 dark:text-brand-white mb-2">{project.title}</h3>
-        <p className="text-sm text-slate-900 dark:text-brand-beige leading-relaxed mb-4">
-          {project.short_description}
-        </p>
-        <div className="flex flex-wrap gap-5 mb-5">
-          {project.skills.map((s) => (
+    <li className="group relative border-t border-rule">
+      {/* Régua de sinal: cresce sobre a divisória quando a linha tem hover ou foco. */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 -top-px h-0.5 origin-left scale-x-0 bg-signal transition-transform duration-500 ease-out-quart group-focus-within:scale-x-100 group-hover:scale-x-100"
+      />
+      <div className="grid gap-x-8 gap-y-4 py-7 sm:grid-cols-[1fr_auto]">
+        <div>
+          {showThumb && (
             <img
-              key={s.id}
-              src={`https://skillicons.dev/icons?i=${s.icon_name}`}
-              alt={s.name}
-              title={s.name}
-              className="w-7 h-7 hover:scale-110 transition-transform"
+              src={project.thumbnail}
+              alt=""
+              loading="lazy"
+              className="mb-5 aspect-[16/10] w-full max-w-md border border-rule bg-surface object-cover"
             />
-          ))}
+          )}
+          <h3 className="text-xl font-bold tracking-tight">
+            {project.title}
+            {project.featured && (
+              <span className="ml-3 align-middle text-xs font-semibold text-signal">
+                {t("projects.featured")}
+              </span>
+            )}
+          </h3>
+          <p className="mt-2 max-w-[60ch] text-muted">{project.short_description}</p>
+          {project.skills.length > 0 && (
+            <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
+              {project.skills.map((s) => (
+                <li key={s.id} className="inline-flex items-center gap-1.5">
+                  <TechIcon name={s.icon_name} />
+                  {s.name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        <button
-          onClick={() => onOpen(project.slug)}
-          // aria-disabled em vez de disabled: um botão desabilitado perde o foco,
-          // e o modal não teria para onde devolvê-lo ao fechar.
-          aria-disabled={loadingSlug === project.slug}
-          className="text-sm text-sky-600 dark:text-brand-blue font-medium hover:text-slate-900 dark:hover:text-brand-white transition-colors aria-disabled:opacity-50"
-        >
-          {loadingSlug === project.slug
-            ? t("states.loading")
-            : `${t("projects.viewCase")} →`}
-        </button>
-        {errorSlug === project.slug && (
-          <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
-            {t("states.error")}
-          </p>
-        )}
+
+        <div className="sm:pt-1 sm:text-right">
+          <button
+            onClick={() => onOpen(project.slug)}
+            // aria-disabled em vez de disabled: um botão desabilitado perde o foco,
+            // e o modal não teria para onde devolvê-lo ao fechar.
+            aria-disabled={loading}
+            className="whitespace-nowrap font-semibold transition-colors after:absolute after:inset-0 group-hover:text-signal aria-disabled:text-muted"
+          >
+            {loading ? (
+              t("states.loading")
+            ) : (
+              <>
+                {t("projects.viewCase")}
+                <span className="sr-only">, {project.title}</span>
+                <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 ease-out-quart group-hover:translate-x-1">
+                  →
+                </span>
+              </>
+            )}
+          </button>
+          {failed && <ErrorNote className="mt-2 sm:justify-end">{t("states.error")}</ErrorNote>}
+        </div>
       </div>
-    </div>
+    </li>
+  );
+}
+
+function SkeletonRows() {
+  return (
+    <ul aria-hidden="true">
+      {[0, 1, 2].map((i) => (
+        <li key={i} className="space-y-3 border-t border-rule py-7">
+          <span className="skeleton h-6 w-2/5" />
+          <span className="skeleton h-4 w-4/5" />
+          <span className="skeleton h-4 w-1/3" />
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -80,7 +108,7 @@ export default function ProjectsSection() {
       const res = await api.get(`/projects/${slug}/`);
       setSelected(res.data);
     } catch {
-      // Sem isto o slug ficava preso em loadingSlug e o botão do card
+      // Sem isto o slug ficava preso em loadingSlug e o botão da linha
       // permanecia desabilitado até um reload da página.
       setErrorSlug(slug);
     } finally {
@@ -89,46 +117,34 @@ export default function ProjectsSection() {
   };
 
   return (
-    <section id="projects" className="py-20 px-10">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-brand-white">
-          {t("projects.title")}
-        </h2>
+    <Section id="projects" title={t("projects.title")}>
+      <p className="mb-10 max-w-[60ch] text-muted">{t("projects.lead")}</p>
 
-        {loading && (
-          <p className="text-center text-slate-900 dark:text-brand-beige">
-            {t("states.loading")}
-          </p>
-        )}
-        {error && (
-          <p
-            role="alert"
-            className="text-center text-red-600 dark:text-red-400"
-          >
-            {t("states.error")}
-          </p>
-        )}
+      {loading && <SkeletonRows />}
+      {error && <ErrorNote>{t("states.error")}</ErrorNote>}
+      {!loading && !error && projects.length === 0 && (
+        <p className="border-t border-rule pt-7">{t("projects.empty")}</p>
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {projects.map((project, index) => (
-            <ProjectCard
+      {projects.length > 0 && (
+        <ul className="border-b border-rule">
+          {projects.map((project) => (
+            <ProjectRow
               key={project.id}
               project={project}
-              index={index}
               onOpen={openProject}
-              loadingSlug={loadingSlug}
-              errorSlug={errorSlug}
-              t={t}
+              loading={loadingSlug === project.slug}
+              failed={errorSlug === project.slug}
             />
           ))}
-        </div>
-      </div>
+        </ul>
+      )}
 
       {selected && (
         <Suspense fallback={null}>
           <ProjectModal project={selected} onClose={() => setSelected(null)} />
         </Suspense>
       )}
-    </section>
+    </Section>
   );
 }

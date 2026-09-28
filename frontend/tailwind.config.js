@@ -1,3 +1,7 @@
+// Cores em OKLCH vindas das variáveis de index.css. O formato "L C H" nas
+// variáveis permite os modificadores de opacidade do Tailwind (bg-ink/40).
+const token = (name) => `oklch(var(--${name}) / <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
@@ -5,50 +9,31 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: "#f0f9ff",
-          500: "#0ea5e9",
-          600: "#0284c7",
-          900: "#0c4a6e",
-        },
-        surface: {
-          light: "#f8fafc",
-          dark: "#0f172a",
-        },
-        paleta: {
-          1: '#d4cdc5',
-          2: '#5b88a5',
-          3: '#f4f4f2',
-          4: '#191013',
-          5: '#243a69',
-        },
-        brand: {
-          beige: '#d4cdc5',
-          blue:  '#5b88a5',
-          white: '#f4f4f2',
-          dark:  '#191013',
-          navy:  '#243a69',
-        },
+        bg: token("bg"),
+        surface: token("surface"),
+        ink: token("ink"),
+        muted: token("muted"),
+        rule: token("rule"),
+        signal: token("signal"),
+        "on-signal": token("on-signal"),
       },
       fontFamily: {
-        sans: ["Prompt", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"],
+        sans: ["Schibsted Grotesk", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
-      animation: {
-        "spin-slow": "spin 14s linear infinite",
-        "fade-up": "fadeUp 0.5s ease-out forwards",
-        'gradient': 'gradient 8s ease infinite',
+      fontSize: {
+        lead: ["clamp(1.125rem, 1rem + 0.5vw, 1.375rem)", { lineHeight: "1.55" }],
+        title: [
+          "clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem)",
+          { lineHeight: "1.1", letterSpacing: "-0.02em" },
+        ],
+        display: [
+          "clamp(2.75rem, 1.5rem + 5.2vw, 5.75rem)",
+          { lineHeight: "0.95", letterSpacing: "-0.035em" },
+        ],
       },
-      keyframes: {
-        fadeUp: {
-          "0%":   { opacity: "0", transform: "translateY(16px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        gradient: {
-          "0%":   { backgroundPosition: "0% 50%" },
-          "50%":  { backgroundPosition: "100% 50%" },
-          "100%": { backgroundPosition: "0% 50%" },
-        },
+      transitionTimingFunction: {
+        "out-quart": "cubic-bezier(0.25, 1, 0.5, 1)",
       },
     },
   },

@@ -1,187 +1,68 @@
 import { useTranslation } from "react-i18next";
-import { useProfile } from "@/hooks/useProfile";
-import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
+import ErrorNote from "@/components/ui/ErrorNote";
+import SocialLinks from "@/components/ui/SocialLinks";
 
-import Aurora from "../ui/Aurora";
-import { prefersReducedMotion } from "@/utils/motion";
+// O seal_text foi escrito para o selo circular antigo e termina em " · ", que
+// servia de emenda entre as repetições. Numa linha única, a emenda sobra.
+const statusFrom = (sealText) => sealText?.replace(/[\s·]+$/, "");
 
-function RotatingSeal({ text, photo, name }) {
-  const safeText = text || "Developer Junior";
-
-  return (
-    <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[420px] lg:h-[420px] flex items-center justify-center">
-      <div className="absolute w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 rounded-full overflow-hidden ring-2 ring-sky-500/40">
-        <img
-          src={photo || "/profile.jpg"}
-          alt={name ? `Foto de ${name}` : "Foto de perfil"}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <svg
-        viewBox="0 0 200 200"
-        className="absolute w-full h-full animate-spin-slow"
-        aria-hidden
-      >
-        <defs>
-          <path
-            id="cp"
-            d="M100,100 m-70,0 a70,70 0 1,1 140,0 a70,70 0 1,1 -140,0"
-          />
-        </defs>
-        <text
-          className="fill-sky-900 dark:fill-sky-400"
-          fontSize="10.5"
-          fontFamily="JetBrains Mono, monospace"
-          letterSpacing="2"
-        >
-          <textPath href="#cp">{(safeText + " · ").repeat(3)}</textPath>
-        </text>
-      </svg>
-    </div>
-  );
-}
-
-export default function HeroSection() {
-  /* Corpo Principal */
+export default function HeroSection({ profile, loading, error }) {
   const { t } = useTranslation();
-  const { data: profile, loading, error } = useProfile();
-
-  if (loading) {
-    return (
-      <section
-        id="home"
-        className="min-h-screen flex items-center justify-center"
-      >
-        <div className="animate-pulse w-8 h-8 rounded-full bg-primary-500" />
-      </section>
-    );
-  }
+  const name = profile?.full_name;
 
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center relative overflow-hidden"
+      aria-busy={loading}
+      className="mx-auto max-w-6xl px-4 pb-20 pt-28 sm:px-8 md:pb-28 md:pt-40"
     >
-      {/* Efeito Aurora de Fundo: animação WebGL contínua, some com movimento reduzido */}
-      {!prefersReducedMotion() && (
-        <div className="absolute inset-0 z-0 opacity-80 dark:opacity-40 transition-opacity duration-300">
-          <Aurora
-            colorStops={["#1f93ff", "#321986", "#0dd7f2"]}
-            blend={0.5}
-            amplitude={1.0}
-            speed={1}
-          />
-        </div>
+      {error && (
+        <ErrorNote role="status" className="mb-8">
+          {t("states.error")}
+        </ErrorNote>
       )}
 
-      <div className="container mx-auto px-10 pt-28 pb-20 relative z-10">
-        <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-10 md:gap-12">
-          {/* Lado Esquerdo: Texto */}
-          <div className="flex-1 space-y-5 text-center md:text-left">
-            {error && (
-              <p role="status" className="text-sm text-amber-600 dark:text-amber-400">
-                {t("states.error")}
-              </p>
-            )}
-            <p className="ml-1 text-primary-600 font-mono text-2xl tracking-widest uppercase animate-fade-up">
-              {t("hero.greeting")}
+      <div className="grid gap-12 md:grid-cols-12 md:items-end md:gap-6">
+        <div className="md:col-span-8">
+          <p className="rise flex items-center gap-2.5 text-sm font-semibold" style={{ "--i": 0 }}>
+            <span aria-hidden="true" className="size-2 rounded-full bg-signal" />
+            {statusFrom(profile?.seal_text) || t("hero.available")}
+          </p>
+
+          <h1 className="rise mt-6 text-display font-extrabold" style={{ "--i": 1 }}>
+            {loading ? <span className="skeleton h-[0.9em] w-[8ch]" /> : name}
+          </h1>
+
+          {profile?.role && (
+            <p className="rise mt-4 text-lead font-semibold" style={{ "--i": 2 }}>
+              {profile.role}
             </p>
+          )}
 
-            {/* Nome com animação de entrada */}
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-slate-900 dark:text-white animate-fade-up"
-              style={{ animationDelay: "0.2s", opacity: 0 }}
-            >
-              {profile?.full_name}
-            </h1>
+          <p className="rise mt-6 max-w-[52ch] text-lead text-muted" style={{ "--i": 3 }}>
+            {t("hero.pitch")}
+          </p>
 
-            <h2
-              className="text-xl md:text-3xl text-primary-600 font-semibold animate-fade-up"
-              style={{ animationDelay: "0.3s", opacity: 0 }}
-            >
-              {profile?.role}
-            </h2>
-
-            {/* Links sociais */}
-            <div
-              className="flex gap-6 justify-center md:justify-start animate-fade-up"
-              style={{ animationDelay: "0.5s", opacity: 0 }}
-            >
-              {profile?.github_url && (
-                <a
-                  href={profile.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-all hover:scale-110"
-                  aria-label="GitHub"
-                >
-                  <FaGithub size={40} />
-                </a>
-              )}
-              {profile?.linkedin_url && (
-                <a
-                  href={profile.linkedin_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-all hover:scale-110"
-                  aria-label="LinkedIn"
-                >
-                  <FaLinkedin size={40} />
-                </a>
-              )}
-              {profile?.email && (
-                <a
-                  href={`mailto:${profile.email}`}
-                  className="text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-all hover:scale-110"
-                  aria-label="Email"
-                >
-                  <FaEnvelope size={40} />
-                </a>
-              )}
-            </div>
-          </div>
-
-          {/* Lado Direito: Foto + Selo */}
           <div
-            className="flex-shrink-0 animate-fade-up"
-            style={{ animationDelay: "0.2s", opacity: 0 }}
+            className="rise mt-10 flex flex-wrap items-center gap-x-8 gap-y-5"
+            style={{ "--i": 4 }}
           >
-            <RotatingSeal
-              text={profile?.seal_text}
-              photo={profile?.photo}
-              name={profile?.full_name}
-            />
+            <a href="#projects" className="btn-signal">
+              {t("hero.cta")}
+              <span aria-hidden="true">↓</span>
+            </a>
+            <SocialLinks profile={profile} className="text-sm" />
           </div>
         </div>
 
-        {/* Sobre mim */}
-        <div
-          className="mt-32 pt-16 border-t border-slate-500/20 animate-fade-up"
-          style={{ animationDelay: "0.6s", opacity: 0 }}
-        >
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-1 bg-primary-500 rounded-full" />
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-wide">
-              {t("about.title")}
-            </h2>
-          </div>
-          <div className="max-full space-y-5">
-            {/* A bio da API já vem traduzida; o texto local só cobre a ausência dela. */}
-            {profile?.bio ? (
-              <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                {profile.bio}
-              </p>
-            ) : (
-              <>
-                <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {t("about.text1")}
-                </p>
-                <p className="text-lg md:text-xl font-light text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {t("about.text2")}
-                </p>
-              </>
-            )}
-          </div>
+        <div className="rise md:col-span-4" style={{ "--i": 2 }}>
+          <img
+            src={profile?.photo || "/profile.jpg"}
+            alt={name ? t("hero.photoAlt", { name }) : t("hero.photoAltAnon")}
+            width="480"
+            height="480"
+            className="aspect-square w-full max-w-[14rem] rounded-full border border-rule bg-surface object-cover sm:max-w-[18rem] md:ml-auto md:max-w-[20rem]"
+          />
         </div>
       </div>
     </section>
