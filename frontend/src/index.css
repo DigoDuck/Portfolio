@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+/* A fonte Prompt é carregada no index.html: @import depois do @tailwind é inválido. */
 
 @layer base {
   html {
@@ -21,6 +21,38 @@
     background-color: #191013;
     color: #f4f4f2;
   }
+}
+
+/* Markdown do estudo de caso. Estilos próprios em vez do plugin Typography.
+   O modal tem sempre fundo escuro, por isso as cores não seguem o tema. */
+@layer components {
+  .markdown {
+    @apply text-sm leading-relaxed text-brand-beige;
+  }
+  .markdown > * + * {
+    @apply mt-4;
+  }
+  .markdown h1,
+  .markdown h2,
+  .markdown h3 {
+    @apply font-bold text-brand-white;
+  }
+  .markdown h1 { @apply text-xl; }
+  .markdown h2 { @apply text-lg mt-6; }
+  .markdown h3 { @apply text-base mt-5; }
+  .markdown strong { @apply font-bold text-brand-white; }
+  .markdown a { @apply text-brand-blue underline underline-offset-2 hover:text-brand-white; }
+  .markdown ul { @apply list-disc pl-5 space-y-1; }
+  .markdown ol { @apply list-decimal pl-5 space-y-1; }
+  .markdown blockquote { @apply border-l-2 border-brand-blue pl-4 italic; }
+  .markdown code { @apply font-mono text-brand-blue; }
+  .markdown pre { @apply overflow-x-auto rounded-lg bg-black/40 p-4; }
+  .markdown pre code { @apply text-brand-beige; }
+  .markdown hr { @apply border-brand-beige/10; }
+  .markdown table { @apply w-full border-collapse text-left; }
+  .markdown th,
+  .markdown td { @apply border border-brand-beige/10 px-3 py-2; }
+  .markdown th { @apply font-semibold text-brand-white; }
 }
 
 @layer utilities {
@@ -44,5 +76,20 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+/* Movimento reduzido: congela as animações CSS contínuas (selo, pulse, gradiente)
+   e encurta as de entrada. Aurora e MouseGlow nem montam, ver utils/motion.js. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }

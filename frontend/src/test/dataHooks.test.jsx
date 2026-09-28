@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, renderHook, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import i18next from "i18next";
@@ -223,7 +223,11 @@ describe("ProjectsSection: detalhe do projeto", () => {
 
     await user.click(botao);
     expect(botao).toHaveTextContent(pt.states.loading);
-    expect(botao).toBeDisabled();
+    // aria-disabled, não disabled: o botão precisa manter o foco (ver
+    // accessibility.test.jsx). Um segundo clique não dispara outra requisição.
+    expect(botao).toHaveAttribute("aria-disabled", "true");
+    await user.click(botao);
+    expect(api.get).toHaveBeenCalledTimes(2);
 
     await act(async () => {
       resolveDetalhe({ data: { ...projeto, case_study: "# ok" } });

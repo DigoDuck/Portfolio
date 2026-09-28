@@ -34,5 +34,10 @@
   "states": {
     "loading": "Loading…",
     "error": "Could not load this content."
+  },
+  "a11y": {
+    "switchLanguage": "EN, switch language to Portuguese",
+    "darkMode": "Dark mode",
+    "menu": "Menu"
   }
 }

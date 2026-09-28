@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/hooks/useProjects";
 import { useInView } from "@/hooks/useInView";
-import ProjectModal from "@/components/ui/ProjectModal";
 import api from "@/api/client";
+
+// Sob demanda: o modal traz react-markdown e remark-gfm, que só servem depois
+// do primeiro clique em um estudo de caso.
+const ProjectModal = lazy(() => import("@/components/ui/ProjectModal"));
 
 function ProjectCard({ project, onOpen, loadingSlug, errorSlug, t, index }) {
   const { ref, inView } = useInView();
@@ -43,8 +46,10 @@ function ProjectCard({ project, onOpen, loadingSlug, errorSlug, t, index }) {
         </div>
         <button
           onClick={() => onOpen(project.slug)}
-          disabled={loadingSlug === project.slug}
-          className="text-sm text-sky-600 dark:text-brand-blue font-medium hover:text-slate-900 dark:hover:text-brand-white transition-colors disabled:opacity-50"
+          // aria-disabled em vez de disabled: um botão desabilitado perde o foco,
+          // e o modal não teria para onde devolvê-lo ao fechar.
+          aria-disabled={loadingSlug === project.slug}
+          className="text-sm text-sky-600 dark:text-brand-blue font-medium hover:text-slate-900 dark:hover:text-brand-white transition-colors aria-disabled:opacity-50"
         >
           {loadingSlug === project.slug
             ? t("states.loading")
@@ -68,6 +73,7 @@ export default function ProjectsSection() {
   const [errorSlug, setErrorSlug] = useState(null);
 
   const openProject = async (slug) => {
+    if (loadingSlug) return;
     setLoadingSlug(slug);
     setErrorSlug(null);
     try {
@@ -119,7 +125,9 @@ export default function ProjectsSection() {
       </div>
 
       {selected && (
-        <ProjectModal project={selected} onClose={() => setSelected(null)} />
+        <Suspense fallback={null}>
+          <ProjectModal project={selected} onClose={() => setSelected(null)} />
+        </Suspense>
       )}
     </section>
   );
