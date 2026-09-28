@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import i18next from "i18next";
 import { initReactI18next, I18nextProvider } from "react-i18next";
@@ -9,6 +9,7 @@ import api from "../api/client";
 import { readFileSync } from "node:fs";
 import Navbar from "../components/layout/Navbar";
 import ProjectsSection from "../components/sections/ProjectsSection";
+import SkillsSection from "../components/sections/SkillsSection";
 
 vi.mock("../api/client", () => ({
   default: { get: vi.fn() },
@@ -147,5 +148,60 @@ describe("prefers-reduced-motion", () => {
     expect(bloco).toMatch(/animation-duration:\s*0\.01ms !important/);
     expect(bloco).toMatch(/transition-duration:\s*0\.01ms !important/);
     expect(bloco).toMatch(/scroll-behavior:\s*auto/);
+  });
+});
+
+describe("Stack: destaque circular que segue o mouse", () => {
+  async function renderStack() {
+    api.get.mockResolvedValue({
+      data: [
+        { id: 1, name: "Python", icon_name: "python", category: "backend", order: 0 },
+        { id: 2, name: "React", icon_name: "react", category: "frontend", order: 0 },
+      ],
+    });
+    const view = render(<SkillsSection />, { wrapper: withI18n });
+    await screen.findByText("Python");
+    const area = view.container.querySelector("[data-spotlight]");
+    // Seletor próprio: os ícones também são aria-hidden e confundiriam a busca.
+    const camada = () => area.querySelector("[data-spotlight-layer]");
+    return { area, camada };
+  }
+
+  it("monta a camada vermelha no primeiro hover do mouse, só para quem enxerga", async () => {
+    const { area, camada } = await renderStack();
+    const termos = screen.getAllByRole("term").length;
+
+    expect(camada()).toBeNull();
+
+    fireEvent.pointerEnter(area, { pointerType: "mouse", clientX: 10, clientY: 10 });
+
+    expect(camada()).toHaveAttribute("aria-hidden", "true");
+    expect(camada()).toHaveTextContent("Python");
+    // A cópia é decorativa: a árvore de acessibilidade não pode duplicar.
+    expect(screen.getAllByRole("term")).toHaveLength(termos);
+  });
+
+  it("segue o ponteiro e se apaga quando o mouse sai", async () => {
+    const { area, camada } = await renderStack();
+
+    fireEvent.pointerEnter(area, { pointerType: "mouse", clientX: 10, clientY: 10 });
+    fireEvent.pointerMove(area, { pointerType: "mouse", clientX: 40, clientY: 25 });
+
+    expect(camada().style.getPropertyValue("--spot-x")).toBe("40px");
+    expect(camada().style.getPropertyValue("--spot-y")).toBe("25px");
+    expect(camada()).toHaveAttribute("data-active", "true");
+
+    fireEvent.pointerLeave(area, { pointerType: "mouse" });
+
+    expect(camada()).toHaveAttribute("data-active", "false");
+  });
+
+  it("não monta com toque, onde não existe hover", async () => {
+    const { area, camada } = await renderStack();
+
+    fireEvent.pointerEnter(area, { pointerType: "touch" });
+    fireEvent.pointerMove(area, { pointerType: "touch", clientX: 5, clientY: 5 });
+
+    expect(camada()).toBeNull();
   });
 });

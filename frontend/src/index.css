@@ -110,6 +110,35 @@
   .markdown th { @apply font-semibold; }
 }
 
+/* Destaque circular da Stack: a cópia vermelha só aparece dentro do círculo.
+   @property deixa o raio animar ao entrar e sair; sem suporte, ele só aparece. */
+@property --spot-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.spotlight-layer {
+  --spot-r: 0px;
+  mask-image: radial-gradient(
+    circle var(--spot-r) at var(--spot-x, 0px) var(--spot-y, 0px),
+    #000 55%,
+    transparent 100%
+  );
+  /* A opacidade anima junto porque o Chrome às vezes não repinta o último
+     quadro de uma máscara que só depende de --spot-r: sem ela, sobrava um
+     resto vermelho congelado depois que o mouse saía. */
+  opacity: 0;
+  transition:
+    --spot-r 350ms cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 350ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.spotlight-layer[data-active="true"] {
+  --spot-r: 96px;
+  opacity: 1;
+}
+
 /* Movimento reduzido: congela as animações contínuas (esqueleto de carregamento)
    e zera as de entrada e as transições. */
 @media (prefers-reduced-motion: reduce) {
