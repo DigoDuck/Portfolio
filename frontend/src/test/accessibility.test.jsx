@@ -10,6 +10,8 @@ import { readFileSync } from "node:fs";
 import Navbar from "../components/layout/Navbar";
 import ProjectsSection from "../components/sections/ProjectsSection";
 import SkillsSection from "../components/sections/SkillsSection";
+import HeroSection from "../components/sections/HeroSection";
+import AboutSection from "../components/sections/AboutSection";
 
 vi.mock("../api/client", () => ({
   default: { get: vi.fn() },
@@ -203,5 +205,29 @@ describe("Stack: destaque circular que segue o mouse", () => {
     fireEvent.pointerMove(area, { pointerType: "touch", clientX: 5, clientY: 5 });
 
     expect(camada()).toBeNull();
+  });
+});
+
+describe("destaque circular no Sobre e no resumo do hero", () => {
+  const profile = { full_name: "Diogo", role: "AI Engineer Full-Stack", bio: "Bio do perfil." };
+
+  it.each([
+    ["Sobre", () => <AboutSection profile={profile} />, "Bio do perfil."],
+    ["resumo do hero", () => <HeroSection profile={profile} loading={false} error={null} />, pt.hero.pitch],
+  ])("%s: cópia vermelha só no hover de mouse e fora da acessibilidade", (_nome, ui, texto) => {
+    const { container } = render(ui(), { wrapper: withI18n });
+    const area = container.querySelector("[data-spotlight]");
+    const camada = () => area.querySelector("[data-spotlight-layer]");
+
+    fireEvent.pointerEnter(area, { pointerType: "touch" });
+    expect(camada()).toBeNull();
+
+    fireEvent.pointerEnter(area, { pointerType: "mouse", clientX: 5, clientY: 5 });
+
+    expect(camada()).toHaveAttribute("aria-hidden", "true");
+    expect(camada()).toHaveTextContent(texto);
+    // A cópia não pode herdar a animação de entrada do hero.
+    expect(camada().closest(".rise")).toBe(area.closest(".rise"));
+    expect(camada().classList.contains("rise")).toBe(false);
   });
 });

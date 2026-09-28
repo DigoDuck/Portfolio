@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import ErrorNote from "@/components/ui/ErrorNote";
 import SocialLinks from "@/components/ui/SocialLinks";
+import Spotlight from "@/components/ui/Spotlight";
 
 // O seal_text foi escrito para o selo circular antigo e termina em " · ", que
 // servia de emenda entre as repetições. Numa linha única, a emenda sobra.
@@ -43,9 +44,9 @@ export default function HeroSection({ profile, loading, error }) {
             </p>
           )}
 
-          <p className="rise mt-6 max-w-[52ch] text-lead text-muted" style={{ "--i": 3 }}>
+          <Spotlight as="p" className="rise mt-6 max-w-[52ch] text-lead text-muted" style={{ "--i": 3 }}>
             {t("hero.pitch")}
-          </p>
+          </Spotlight>
 
           <div
             className="rise mt-10 flex flex-wrap items-center gap-x-8 gap-y-5"
