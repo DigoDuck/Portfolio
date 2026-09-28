@@ -1,118 +1,51 @@
 import { useTranslation } from "react-i18next";
 import { useSkills } from "@/hooks/useSkills";
-import { useInView } from "@/hooks/useInView";
-import { useAppStore } from "@/store/useAppStore";
+import Section from "@/components/layout/Section";
+import ErrorNote from "@/components/ui/ErrorNote";
+import TechIcon from "@/components/ui/TechIcon";
 
-const CATEGORY_CONFIG = {
-  backend: { label_pt: "Back-end", label_en: "Back-end", icon: "⚙️" },
-  frontend: { label_pt: "Front-end", label_en: "Front-end", icon: "</>" },
-  infra: {
-    label_pt: "Infraestrutura / DB",
-    label_en: "Infrastructure / DB",
-    icon: "🗄️",
-  },
-};
-
-function SkillCard({ skill, index }) {
-  const { ref, inView } = useInView();
-
-  return (
-    <div
-      ref={ref}
-      className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-slate-200 dark:border-[#d4cdc5]/10 bg-slate-100 dark:bg-[#243a69]/20 hover:bg-slate-200 dark:hover:bg-[#243a69]/40 hover:border-sky-500/40 dark:hover:border-[#5b88a5]/40 transition-all group cursor-default"
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(16px)",
-        transition: `opacity 0.4s ease ${index * 0.06}s, transform 0.4s ease ${index * 0.06}s`,
-      }}
-    >
-      <img
-        src={`https://skillicons.dev/icons?i=${skill.icon_name}`}
-        alt={skill.name}
-        className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
-        onError={(e) => {
-          e.target.style.display = "none";
-        }}
-      />
-      <span className="text-xs text-slate-800 dark:text-[#d4cdc5]/80 font-medium text-center leading-tight">
-        {skill.name}
-      </span>
-    </div>
-  );
-}
-
-function CategoryBlock({ category, skills, lang }) {
-  const config = CATEGORY_CONFIG[category];
-  const label = lang === "en" ? config?.label_en : config?.label_pt;
-  const { ref, inView } = useInView();
-
-  return (
-    <div className="mb-10">
-      {/* Cabeçalho anima vindo da esquerda */}
-      <div
-        ref={ref}
-        className="flex items-center gap-3 mb-4"
-        style={{
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateX(0)" : "translateX(-20px)",
-          transition: "opacity 0.5s ease, transform 0.5s ease",
-        }}
-      >
-        <span className="text-sky-600 dark:text-[#5b88a5] font-mono text-lg">{config?.icon}</span>
-        <h3 className="text-lg font-bold text-slate-900 dark:text-[#f4f4f2]">
-          {label || category}
-        </h3>
-      </div>
-
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-        {skills.map((skill, index) => (
-          <SkillCard key={skill.id} skill={skill} index={index} /> // ← passa o index
-        ))}
-      </div>
-    </div>
-  );
-}
+// Mesma ordem das CATEGORY_CHOICES do model Skill no backend.
+const ORDER = ["backend", "frontend", "infra", "devops", "testing", "ai"];
 
 export default function SkillsSection() {
   const { t } = useTranslation();
-  const { data: skills } = useSkills();
-  const lang = useAppStore((state) => state.lang);
-  const { ref, inView } = useInView();
+  const { data: skills, loading, error } = useSkills();
 
+  // reduce em vez de Object.groupBy (ES2024): Safari antes do 17.4 não tem.
   const grouped = skills.reduce((acc, skill) => {
-    acc[skill.category] = acc[skill.category] || [];
-    acc[skill.category].push(skill);
+    (acc[skill.category] ??= []).push(skill);
     return acc;
   }, {});
 
-  const order = ["backend", "frontend", "infra"];
-
   return (
-    <section id="skills" className="py-20 px-6">
-      <div className="max-w-4xl mx-auto">
-        {" "}
-        <h2
-          ref={ref}
-          className="text-3xl font-bold mb-12 text-slate-900 dark:text-[#f4f4f2] text-center"
-          style={{
-            opacity: inView ? 1 : 0,
-            transform: inView ? "translateY(0)" : "translateY(16px)",
-            transition: "opacity 0.5s ease, transform 0.5s ease",
-          }}
-        >
-          {t("skills.title")}
-        </h2>
-        {order.map((cat) =>
-          grouped[cat] ? (
-            <CategoryBlock
-              key={cat}
-              category={cat}
-              skills={grouped[cat]}
-              lang={lang}
-            />
-          ) : null,
-        )}
-      </div>
-    </section>
+    <Section id="skills" title={t("skills.title")}>
+      {error && <ErrorNote>{t("states.error")}</ErrorNote>}
+      {loading && (
+        <div aria-hidden="true" className="space-y-5 border-t border-rule pt-5">
+          <span className="skeleton h-5 w-3/5" />
+          <span className="skeleton h-5 w-2/5" />
+        </div>
+      )}
+
+      <dl className="border-b border-rule">
+        {ORDER.filter((cat) => grouped[cat]).map((cat) => (
+          <div key={cat} className="grid gap-1 border-t border-rule py-5 sm:grid-cols-9 sm:gap-6">
+            <dt className="text-sm font-semibold text-muted sm:col-span-2 sm:pt-1">
+              {t(`skills.categories.${cat}`)}
+            </dt>
+            <dd className="sm:col-span-7">
+              <ul className="flex flex-wrap gap-x-6 gap-y-3 text-lead font-semibold">
+                {grouped[cat].map((s) => (
+                  <li key={s.id} className="inline-flex items-center gap-2">
+                    <TechIcon name={s.icon_name} className="text-[1.1em]" />
+                    {s.name}
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </Section>
   );
 }

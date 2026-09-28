@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 export const useAppStore = create(
     persist(
         (set) => ({
-            theme: 'dark', // tema principal é o dark
+            theme: 'light', // claro por padrão: o público lê de dia, em monitor de escritório
 
             toggleTheme: () =>
                 set((state) => {

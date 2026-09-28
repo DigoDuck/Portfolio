@@ -183,7 +183,7 @@ describe("ProjectsSection: detalhe do projeto", () => {
     render(<ProjectsSection />, { wrapper: withI18n });
 
     const botao = await screen.findByRole("button", {
-      name: `${pt.projects.viewCase} →`,
+      name: `${pt.projects.viewCase}, Portfolio`,
     });
 
     await user.click(botao);
@@ -198,7 +198,8 @@ describe("ProjectsSection: detalhe do projeto", () => {
     await user.click(botao);
     // h2 = título do modal (o card usa h3 com o mesmo texto).
     expect(
-      await screen.findByRole("heading", { level: 2, name: "Portfolio" }),
+      // timeout: primeiro import() do modal lazy.
+      await screen.findByRole("heading", { level: 2, name: "Portfolio" }, { timeout: 5000 }),
     ).toBeInTheDocument();
   });
 
@@ -216,7 +217,7 @@ describe("ProjectsSection: detalhe do projeto", () => {
     render(<ProjectsSection />, { wrapper: withI18n });
 
     const botao = await screen.findByRole("button", {
-      name: `${pt.projects.viewCase} →`,
+      name: `${pt.projects.viewCase}, Portfolio`,
     });
     // A chave errada (projects.caseStudy) renderizava a string crua na tela.
     expect(screen.queryByText(/projects\.caseStudy/)).toBeNull();

@@ -1,43 +1,56 @@
 {
   "nav": {
-    "home": "Home",
-    "skills": "Skills",
     "projects": "Projects",
+    "about": "About",
+    "skills": "Stack",
     "contact": "Contact"
   },
   "hero": {
-    "greeting": "Hi, I'm",
-    "cta": "See Projects",
-    "available": "Open to opportunities"
+    "available": "Open to opportunities",
+    "pitch": "I build full-stack products with Python (Django and FastAPI) and React, with AI features in production. Each case study shows the decisions behind the code.",
+    "cta": "See case studies",
+    "photoAlt": "Photo of {{name}}",
+    "photoAltAnon": "Profile photo"
   },
   "about": {
-    "title": "About Me",
-    "text1": "I'm a Full-Stack Developer focused on building scalable applications, from database modeling to user experience. Currently studying Systems Analysis and Development, I work with modern technologies with a stronger focus on Python(Django) on the back-end and React.js on the front-end.",
-    "text2": "More than just writing code, I'm driven by continuous learning and aim to grow through real-world practice in the tech industry. I'm looking for my first opportunity in the field, bringing a strong desire to absorb knowledge from experienced teams, quickly master new architectures, and deliver real value to projects."
+    "title": "About",
+    "text1": "I'm a Full-Stack Developer focused on building scalable applications, from database modeling to user experience. Currently studying Systems Analysis and Development, I use modern technologies with strong expertise in Python (Django) on the back-end and React.js on the front-end.",
+    "text2": "More than just writing code, I'm driven by continuous learning and aim to grow through hands-on experience in the tech world. I'm looking for my first opportunity in the field, bringing a strong eagerness to learn from experienced teams, quickly master new architectures, and deliver real value to projects."
   },
   "skills": {
-    "title": "Technical Skills",
+    "title": "Stack",
     "categories": {
       "backend": "Back-end",
       "frontend": "Front-end",
-      "infra": "Infrastructure / DB",
-      "tools": "Tools"
+      "infra": "Data",
+      "devops": "DevOps and tools",
+      "testing": "Testing",
+      "ai": "AI"
     }
   },
   "projects": {
-    "title": "Projects",
-    "viewCase": "View Case Study",
-    "viewRepo": "Repository",
-    "viewLive": "Live Demo",
+    "title": "Case studies",
+    "lead": "Open a project to read the full case study.",
+    "featured": "Featured",
+    "empty": "The case studies are being written. Meanwhile, the code is on GitHub.",
+    "viewCase": "Read case study",
+    "viewRepo": "View repository",
+    "viewLive": "View live project",
     "close": "Close"
+  },
+  "contact": {
+    "title": "Contact",
+    "lead": "Roles, questions about a project, or a conversation about code: I reply by email."
   },
   "states": {
     "loading": "Loading…",
     "error": "Could not load this content."
   },
   "a11y": {
+    "skipToContent": "Skip to content",
     "switchLanguage": "EN, switch language to Portuguese",
     "darkMode": "Dark mode",
-    "menu": "Menu"
+    "menu": "Menu",
+    "newTab": "(opens in a new tab)"
   }
 }

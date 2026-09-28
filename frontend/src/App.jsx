@@ -1,20 +1,25 @@
 import Navbar from '@/components/layout/Navbar'
 import HeroSection from '@/components/sections/HeroSection'
-import SkillsSection from '@/components/sections/SkillsSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
-import MouseGlow from "./components/ui/MouseGlow";
-import { prefersReducedMotion } from "@/utils/motion";
+import AboutSection from '@/components/sections/AboutSection'
+import SkillsSection from '@/components/sections/SkillsSection'
+import ContactSection from '@/components/sections/ContactSection'
+import { useProfile } from '@/hooks/useProfile'
 
 export default function App() {
+  // Uma busca só: hero, sobre, contato e navbar leem o mesmo perfil.
+  const { data: profile, loading, error } = useProfile()
+
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      {!prefersReducedMotion() && <MouseGlow />}
-      <main>
-        <HeroSection />
-        <SkillsSection />
+    <>
+      <Navbar name={profile?.full_name} />
+      <main id="main">
+        <HeroSection profile={profile} loading={loading} error={error} />
         <ProjectsSection />
+        <AboutSection profile={profile} />
+        <SkillsSection />
       </main>
-    </div>
+      <ContactSection profile={profile} />
+    </>
   )
 }

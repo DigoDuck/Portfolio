@@ -92,7 +92,7 @@ describe("idioma persistido", () => {
     render(<SkillsSection />);
 
     await waitFor(() =>
-      expect(screen.getByText("Infrastructure / DB")).toBeInTheDocument(),
+      expect(screen.getByText("Data")).toBeInTheDocument(),
     );
   });
 });
@@ -129,7 +129,8 @@ describe("localStorage corrompido", () => {
     });
 
     expect(document.getElementById("root")).toHaveTextContent("app no ar");
-    expect(document.documentElement).toHaveClass("dark");
+    // Padrão do store: tema claro.
+    expect(document.documentElement).not.toHaveClass("dark");
 
     const { useAppStore } = await import("@/store/useAppStore");
     expect(useAppStore.getState().lang).toBe("pt");

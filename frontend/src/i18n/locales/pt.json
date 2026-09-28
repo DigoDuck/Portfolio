@@ -1,43 +1,56 @@
 {
   "nav": {
-    "home": "Home",
-    "skills": "Habilidades",
     "projects": "Projetos",
+    "about": "Sobre",
+    "skills": "Stack",
     "contact": "Contato"
   },
   "hero": {
-    "greeting": "Olá, me chamo",
-    "cta": "Ver Projetos",
-    "available": "Aberto a oportunidades"
+    "available": "Aberto a oportunidades",
+    "pitch": "Construo produtos full-stack com Python (Django e FastAPI) e React, com recursos de IA em produção. Cada estudo de caso mostra as decisões por trás do código.",
+    "cta": "Ver estudos de caso",
+    "photoAlt": "Foto de {{name}}",
+    "photoAltAnon": "Foto de perfil"
   },
   "about": {
-    "title": "Sobre Mim",
+    "title": "Sobre",
     "text1": "Sou um Desenvolvedor Full-Stack focado em criar aplicações escaláveis, desde a modelagem do banco de dados até a experiência do usuário. Atualmente cursando Análise e Desenvolvimento de Sistemas, utilizo tecnologias modernas com maior domínio em Python(Django) no back-end e React.js no front-end.",
     "text2": "Mais do que apenas escrever código, sou motivado pelo aprendizado contínuo e pretendo me aperfeiçoar na prática dentro do mundo da tecnologia. Busco minha primeira oportunidade na área, trazendo uma enorme vontade de absorver conhecimento de equipes experientes, dominar novas arquiteturas rapidamente e agregar valor real aos projetos."
   },
   "skills": {
-    "title": "Habilidades Técnicas",
+    "title": "Stack",
     "categories": {
-      "backend": "Backend",
-      "frontend": "Frontend",
-      "infra": "Infraestrutura / DB",
-      "tools": "Ferramentas"
+      "backend": "Back-end",
+      "frontend": "Front-end",
+      "infra": "Dados",
+      "devops": "DevOps e ferramentas",
+      "testing": "Testes",
+      "ai": "IA"
     }
   },
   "projects": {
-    "title": "Projetos",
-    "viewCase": "Ver Estudo de Caso",
-    "viewRepo": "Ver Repositório",
-    "viewLive": "Ver Projeto",
+    "title": "Estudos de caso",
+    "lead": "Abra um projeto para ler o estudo de caso completo.",
+    "featured": "Destaque",
+    "empty": "Os estudos de caso estão sendo escritos. Enquanto isso, o código está no GitHub.",
+    "viewCase": "Ver estudo de caso",
+    "viewRepo": "Ver repositório",
+    "viewLive": "Ver projeto no ar",
     "close": "Fechar"
+  },
+  "contact": {
+    "title": "Contato",
+    "lead": "Vagas, dúvidas sobre um projeto ou uma conversa sobre código: respondo por e-mail."
   },
   "states": {
     "loading": "Carregando…",
     "error": "Não foi possível carregar o conteúdo."
   },
   "a11y": {
+    "skipToContent": "Pular para o conteúdo",
     "switchLanguage": "PT, mudar idioma para inglês",
     "darkMode": "Modo escuro",
-    "menu": "Menu"
+    "menu": "Menu",
+    "newTab": "(abre em nova aba)"
   }
 }
