@@ -660,5 +660,10 @@ tasks:
   log:
   - date: '2026-09-28'
     text: 'Feita na R-010 (commit e479eaa), enviada no mesmo PR #7 da T-014.'
+  - date: '2026-09-28'
+    text: 'Os commits desta task chegaram depois do merge do PR #7 e ficaram fora
+      do main. Reenviados no PR https://github.com/DigoDuck/Portfolio/pull/8. Lição:
+      depois que o usuário mescla, não empurrar mais commits para a mesma branch;
+      conferir o estado do PR antes do push.'
   created_at: '2026-09-28T14:48:57.111046Z'
-  updated_at: '2026-09-28T14:52:56.752738Z'
+  updated_at: '2026-09-28T14:58:47.686134Z'
