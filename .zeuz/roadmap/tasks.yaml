@@ -206,8 +206,14 @@ tasks:
       foco, ARIA e reduced motion verdes (accessibility.test.jsx); ESLint analisa
       .js/.jsx; build sem o aviso da fonte e com o modal em chunk separado. Falta
       ver no navegador antes do done.'
+  - date: '2026-09-28'
+    text: 'Trabalho da R-002 commitado na branch fix/portfolio-hardening-phase-4 e
+      enviado no PR https://github.com/DigoDuck/Portfolio/pull/3, contra a main. Commits:
+      83c4955 (Fase 4 inteira) e b36baa2 (registros do ZEUZ). O PR também leva o 6704485
+      (nota da T-003 que ficou fora do PR #2). Não marcar done antes do merge e de
+      uma olhada no navegador.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-28T13:20:04.875504Z'
+  updated_at: '2026-09-28T13:23:33.056006Z'
 - id: T-005
   title: 'Migração operacional do backend: Render para Railway'
   state: backlog
