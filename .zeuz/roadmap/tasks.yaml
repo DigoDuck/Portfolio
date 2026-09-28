@@ -71,7 +71,7 @@ tasks:
   updated_at: '2026-09-06T13:30:21.130384Z'
 - id: T-003
   title: 'Fase 3 do design de hardening: contratos e estados do frontend'
-  state: review
+  state: done
   notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção ''Fase
     3'': consumir photo/bio/seal_text do perfil, corrigir chaves de tradução de case
     study/repositório/demo, mensagens traduzidas de loading e erro, sincronizar idioma
@@ -113,11 +113,17 @@ tasks:
 
       O review desta tarefa agora acontece no PR, não só aqui. Não marcar done antes
       de o PR ser mesclado.'
+  - date: '2026-09-28'
+    text: 'Aprovada pelo usuário em 2026-09-28, depois do merge do PR #2 (bccd8f6).
+      Conferida no main: 29/29 testes verdes, build falha sem VITE_API_URL e passa
+      com ela. O critério "existir o plano da Fase 3" não foi cumprido como documento:
+      nenhum plano da fase 3 em docs/superpowers/plans. A divisão em T-006 a T-009
+      no ZEUZ fez o papel do plano, e o usuário aprovou nessa base.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T13:53:47.948170Z'
+  updated_at: '2026-09-28T13:09:41.424797Z'
 - id: T-004
   title: 'Fase 4 do design de hardening: acessibilidade e acabamento do frontend'
-  state: backlog
+  state: review
   notes: 'docs/superpowers/specs/2026-08-01-portfolio-hardening-design.md, seção ''Fase
     4'': role=dialog/aria-modal/foco no modal, nomes acessíveis nos controles móveis
     e de tema, prefers-reduced-motion, lazy-load do modal, corrigir a fonte Prompt,
@@ -148,8 +154,60 @@ tasks:
       de código, e esse comando está na lista de verificação final da spec. Enquanto
       isso não for corrigido, qualquer relatório que cite `npm run lint` como evidência
       está citando nada.'
+  - date: '2026-09-28'
+    text: 'Promovida em 2026-09-28 a pedido do usuário, com a Fase 3 (T-003) aprovada
+      e mesclada no main. Linha de base medida no main 6704485: `npm run lint` passa
+      sem analisar nenhum arquivo (config só cobre ts/tsx); o build emite o aviso
+      "@import must precede" da fonte Prompt e um chunk acima de 500 kB; o .gitignore
+      da raiz já não tem o EOF literal (item já resolvido antes desta tarefa).'
+  - date: '2026-09-28'
+    text: 'Plano da Fase 4 (R-002), no lugar de um documento em docs/superpowers/plans,
+      no mesmo formato que o usuário aceitou para a Fase 3.
+
+
+      1. Testes primeiro, em src/test/accessibility.test.jsx: modal (role=dialog,
+      aria-modal, título associado, foco inicial, Tab/Shift+Tab contidos, Escape,
+      foco devolvido ao botão do card), Navbar (nomes acessíveis, aria-pressed no
+      tema, aria-expanded no menu, links do menu fechado fora da ordem de Tab), reduced
+      motion (Aurora e MouseGlow não montam).
+
+      2. ProjectModal: div role=dialog com contenção de foco manual. O <dialog> nativo
+      foi descartado porque o jsdom não implementa showModal(), então o comportamento
+      ficaria sem teste. useEffectEvent para o onClose, para o efeito não rodar de
+      novo a cada render do pai.
+
+      3. Botão do card: de disabled para aria-disabled com guarda de clique duplo,
+      porque um botão desabilitado perde o foco no navegador e não haveria para onde
+      devolvê-lo.
+
+      4. Modal via React.lazy + Suspense (react-markdown e remark-gfm saem do chunk
+      principal).
+
+      5. Navbar: aria-label traduzido, aria-pressed, aria-expanded/aria-controls,
+      inert no menu fechado.
+
+      6. Reduced motion: regra CSS global para as animações CSS; Aurora e MouseGlow
+      não renderizam.
+
+      7. Fonte: <link> no index.html com preconnect, família "Prompt", só os pesos
+      300-700 usados no código.
+
+      8. Markdown: estilos próprios em index.css (as classes prose eram mortas, o
+      plugin Typography não está instalado).
+
+      9. index.html: título e descrição.
+
+      10. ESLint cobrindo js/jsx e corrigindo o que aparecer.
+
+      Item do .gitignore: já resolvido antes desta tarefa, nada a fazer.'
+  - date: '2026-09-28'
+    text: 'Implementada na R-002, ainda não commitada (a árvore do main está suja).
+      Done when conferido: plano registrado como nota nesta tarefa; testes de teclado,
+      foco, ARIA e reduced motion verdes (accessibility.test.jsx); ESLint analisa
+      .js/.jsx; build sem o aviso da fonte e com o modal em chunk separado. Falta
+      ver no navegador antes do done.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T13:47:31.419215Z'
+  updated_at: '2026-09-28T13:20:04.875504Z'
 - id: T-005
   title: 'Migração operacional do backend: Render para Railway'
   state: backlog
@@ -167,7 +225,7 @@ tasks:
   updated_at: '2026-09-06T12:35:33.655753Z'
 - id: T-006
   title: 'Fase 3a: infraestrutura de testes do frontend e guarda de VITE_API_URL'
-  state: review
+  state: done
   notes: 'Fundação da Fase 3 (T-003). Sequencial: precisa estar pronta antes das T-007/T-008/T-009,
     que escrevem testes. Ver DEC-002 para por que o Vitest foi puxado da Fase 4.
 
@@ -201,8 +259,12 @@ tasks:
       só quebraria no navegador do visitante, depois do deploy já ter passado. Com
       a guarda no build, o fallback de localhost em client.js vira inalcançável em
       produção, então mexer nele seria diff sem efeito.'
+  - date: '2026-09-28'
+    text: 'Aprovada pelo usuário em 2026-09-28. Conferida no main: guarda em vite.config.js:10,
+      buildEnv.test.js verde, e build real confirmando que falha sem VITE_API_URL
+      e passa com ela.'
   created_at: '2026-09-06T13:33:25.944489Z'
-  updated_at: '2026-09-06T13:36:54.903384Z'
+  updated_at: '2026-09-28T13:09:41.537919Z'
 - id: T-007
   title: 'Fase 3b: sincronizar idioma e tema persistidos com i18next e o documento'
   state: review
@@ -253,7 +315,7 @@ tasks:
 - id: T-008
   title: 'Fase 3c: erro, cancelamento e respostas obsoletas nos hooks e no detalhe
     de projeto'
-  state: review
+  state: done
   notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes).
 
 
@@ -296,11 +358,15 @@ tasks:
       o modelo Django e não só contra o serializer. Duplicação consciente mantida:
       o padrão de AbortController se repete nos três hooks; extrair um useFetch foi
       descartado porque as três chamadas diferem em dependências e valor inicial.'
+  - date: '2026-09-28'
+    text: 'Aprovada pelo usuário em 2026-09-28. Conferida no main: AbortController
+      e estado de erro nos três hooks, e catch/finally em ProjectsSection.openProject
+      (linhas 76-81). dataHooks.test.jsx verde.'
   created_at: '2026-09-06T13:33:41.231807Z'
-  updated_at: '2026-09-06T13:47:21.433355Z'
+  updated_at: '2026-09-28T13:09:41.617310Z'
 - id: T-009
   title: 'Fase 3d: contrato do perfil e chaves de tradução quebradas'
-  state: review
+  state: done
   notes: 'Parte da Fase 3 (T-003). Depende da T-006 (runner de testes) e do contrato
     { data, loading, error } da T-008.
 
@@ -350,5 +416,10 @@ tasks:
       local só entra quando a API não fornece". Achado extra: RotatingSeal tinha dois
       fallbacks conflitantes, "Backend Developer" no default do parâmetro e "Developer
       Junior" no ponto de chamada, então o default interno era código morto.'
+  - date: '2026-09-28'
+    text: 'Aprovada pelo usuário em 2026-09-28. Conferida no main: seal_text, photo
+      e bio consumidos em HeroSection, chaves viewCase/viewRepo/viewLive nos pontos
+      de chamada, profileContract.test.jsx verde. Pendente fora do código: conferir
+      no navegador se a bio cadastrada no admin é o texto desejado no "Sobre mim".'
   created_at: '2026-09-06T13:33:49.411384Z'
-  updated_at: '2026-09-06T13:47:24.679286Z'
+  updated_at: '2026-09-28T13:09:41.713801Z'
