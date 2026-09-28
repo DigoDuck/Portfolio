@@ -667,3 +667,24 @@ tasks:
       conferir o estado do PR antes do push.'
   created_at: '2026-09-28T14:48:57.111046Z'
   updated_at: '2026-09-28T14:58:47.686134Z'
+- id: T-016
+  title: Validar DATABASE_URL e falhar com mensagem clara quando for inválida
+  state: review
+  role: coding
+  notes: 'Pedido do usuário em 2026-09-28. Ao aplicar o seed_content em produção,
+    duas tentativas falharam com erros genéricos do Django: com o texto de exemplo,
+    que virou uma conexão silenciosa em localhost sem senha, e com a URL https da
+    API, que deu "Please supply the NAME". Causa: core/database.py trata qualquer
+    valor que não comece com "sqlite" como Postgres, sem validar esquema, host nem
+    nome do banco.
+
+
+    Escopo: build_database_config aceita só sqlite:/// e postgres:// ou postgresql://,
+    e exige host e nome do banco para Postgres. Qualquer outra coisa levanta ImproperlyConfigured
+    com uma mensagem que diz o formato esperado, sem ecoar a URL (ela pode conter
+    senha). Testes em test_database_config.py.'
+  log:
+  - date: '2026-09-28'
+    text: 'Feita na R-011. Mesclar depois do PR #8 (branch empilhada).'
+  created_at: '2026-09-28T14:59:40.049129Z'
+  updated_at: '2026-09-28T15:00:39.878652Z'
