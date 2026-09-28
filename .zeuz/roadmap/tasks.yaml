@@ -102,8 +102,19 @@ tasks:
       o campo bio da API sobre o texto local do i18n. Isso é o que a spec pede, mas
       troca o texto visível da página pelo que estiver cadastrado no admin, e os dois
       textos hoje são diferentes.'
+  - date: '2026-09-06'
+    text: 'Trabalho da R-001 commitado em três commits na branch fix/portfolio-hardening-phase-3
+      e enviado para o PR https://github.com/DigoDuck/Portfolio/pull/2, contra a main.
+
+
+      Commits: 5a425ac (conversão de encoding do requirements.txt, sem relação com
+      a fase), d553e01 (Fase 3 inteira, 22 arquivos), 7a6e3e5 (registros do ZEUZ).
+
+
+      O review desta tarefa agora acontece no PR, não só aqui. Não marcar done antes
+      de o PR ser mesclado.'
   created_at: '2026-09-06T12:35:33.655753Z'
-  updated_at: '2026-09-06T13:47:39.254011Z'
+  updated_at: '2026-09-06T13:53:47.948170Z'
 - id: T-004
   title: 'Fase 4 do design de hardening: acessibilidade e acabamento do frontend'
   state: backlog
