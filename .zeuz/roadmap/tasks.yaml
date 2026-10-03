@@ -644,7 +644,7 @@ tasks:
   updated_at: '2026-09-28T14:58:26.757500Z'
 - id: T-015
   title: Estender o destaque circular ao texto do Sobre e ao resumo do hero
-  state: review
+  state: done
   role: coding
   notes: 'Pedido do usuário em 2026-09-28, depois de aprovar o efeito da Stack (T-014):
     o mesmo hover circular vermelho no texto do Sobre e no parágrafo de resumo do
@@ -665,5 +665,33 @@ tasks:
       do main. Reenviados no PR https://github.com/DigoDuck/Portfolio/pull/8. Lição:
       depois que o usuário mescla, não empurrar mais commits para a mesma branch;
       conferir o estado do PR antes do push.'
+  - date: '2026-09-28'
+    text: '2026-09-28: PR #8 mesclado pelo usuário; conferido que e479eaa e c21f4f5
+      estão no main.'
   created_at: '2026-09-28T14:48:57.111046Z'
-  updated_at: '2026-09-28T14:58:47.686134Z'
+  updated_at: '2026-09-28T15:01:20.003622Z'
+- id: T-016
+  title: Validar DATABASE_URL e falhar com mensagem clara quando for inválida
+  state: review
+  role: coding
+  notes: 'Pedido do usuário em 2026-09-28. Ao aplicar o seed_content em produção,
+    duas tentativas falharam com erros genéricos do Django: com o texto de exemplo,
+    que virou uma conexão silenciosa em localhost sem senha, e com a URL https da
+    API, que deu "Please supply the NAME". Causa: core/database.py trata qualquer
+    valor que não comece com "sqlite" como Postgres, sem validar esquema, host nem
+    nome do banco.
+
+
+    Escopo: build_database_config aceita só sqlite:/// e postgres:// ou postgresql://,
+    e exige host e nome do banco para Postgres. Qualquer outra coisa levanta ImproperlyConfigured
+    com uma mensagem que diz o formato esperado, sem ecoar a URL (ela pode conter
+    senha). Testes em test_database_config.py.'
+  log:
+  - date: '2026-09-28'
+    text: 'Feita na R-011. Mesclar depois do PR #8 (branch empilhada).'
+  - date: '2026-09-28'
+    text: 'Enviada no PR https://github.com/DigoDuck/Portfolio/pull/9. O PR #8 já
+      estava mesclado quando o #9 foi aberto, então o #9 não depende de mais nada;
+      a descrição foi corrigida.'
+  created_at: '2026-09-28T14:59:40.049129Z'
+  updated_at: '2026-09-28T15:01:20.210446Z'
