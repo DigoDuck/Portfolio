@@ -9,6 +9,7 @@
     "available": "Open to opportunities",
     "pitch": "I build full-stack products with Python (Django and FastAPI) and React, with AI features in production. Each case study shows the decisions behind the code.",
     "cta": "See case studies",
+    "cv": "Download résumé",
     "photoAlt": "Photo of {{name}}",
     "photoAltAnon": "Profile photo"
   },

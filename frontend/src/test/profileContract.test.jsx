@@ -132,6 +132,22 @@ describe("a página consome o contrato do perfil", () => {
     expect(await screen.findByRole("img")).toHaveAttribute("src", "/profile.jpg");
   });
 
+  it("oferece o currículo com a URL de cv como veio da API", async () => {
+    const cv = "https://midia.exemplo.test/cv/curriculo.pdf?X-Amz-Signature=abc";
+    mockProfile({ cv });
+    render(<App />);
+
+    expect(await screen.findByRole("link", { name: "Baixar currículo" })).toHaveAttribute("href", cv);
+  });
+
+  it("esconde o botão do currículo quando cv vem nulo", async () => {
+    mockProfile({ cv: null });
+    render(<App />);
+
+    await screen.findByRole("heading", { level: 1, name: "Diogo Ribeiro" });
+    expect(screen.queryByRole("link", { name: "Baixar currículo" })).not.toBeInTheDocument();
+  });
+
   it("mostra a bio da API no lugar do texto local", async () => {
     mockProfile();
     render(<App />);

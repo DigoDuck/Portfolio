@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FiDownload } from "react-icons/fi";
 import ErrorNote from "@/components/ui/ErrorNote";
 import SocialLinks from "@/components/ui/SocialLinks";
 import Spotlight from "@/components/ui/Spotlight";
@@ -56,6 +57,13 @@ export default function HeroSection({ profile, loading, error }) {
               {t("hero.cta")}
               <span aria-hidden="true">↓</span>
             </a>
+            {/* O nome do arquivo e o download forçado vêm da URL assinada (ver ProfileSerializer.get_cv). */}
+            {profile?.cv && (
+              <a href={profile.cv} className="btn-outline">
+                <FiDownload aria-hidden="true" />
+                {t("hero.cv")}
+              </a>
+            )}
             <SocialLinks profile={profile} className="text-sm" />
           </div>
         </div>
