@@ -9,6 +9,7 @@
     "available": "Aberto a oportunidades",
     "pitch": "Construo produtos full-stack com Python (Django e FastAPI) e React, com recursos de IA em produção. Cada estudo de caso mostra as decisões por trás do código.",
     "cta": "Ver estudos de caso",
+    "cv": "Baixar currículo",
     "photoAlt": "Foto de {{name}}",
     "photoAltAnon": "Foto de perfil"
   },

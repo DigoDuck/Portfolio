@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
 class Profile(models.Model):
@@ -13,7 +14,11 @@ class Profile(models.Model):
     singleton_guard = models.PositiveSmallIntegerField(default=1, editable=False)
     
     photo = models.ImageField(upload_to='profile/', blank=True, null=True)
-    
+
+    # Currículo em PDF para o botão de download; sem a versão de um idioma, a API entrega a outra.
+    cv_pt = models.FileField(upload_to='cv/', blank=True, validators=[FileExtensionValidator(['pdf'])])
+    cv_en = models.FileField(upload_to='cv/', blank=True, validators=[FileExtensionValidator(['pdf'])])
+
     github_url = models.URLField(blank=True)
     linkedin_url = models.URLField(blank=True)
     email = models.EmailField(blank=True)

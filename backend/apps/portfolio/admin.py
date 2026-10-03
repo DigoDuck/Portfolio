@@ -9,6 +9,10 @@ class ProfileAdmin(admin.ModelAdmin):
         ('Bio', {'fields': ('bio_pt', 'bio_en')}),
         ('Selo Rotativo', {'fields': ('seal_text_pt', 'seal_text_en')}),
         ('Links', {'fields': ('github_url', 'linkedin_url', 'email')}),
+        ('Currículo', {
+            'fields': ('cv_pt', 'cv_en'),
+            'description': 'PDF do botão de download. Sem uma das versões, o site entrega a outra.',
+        }),
     )
 
 @admin.register(Skill)
