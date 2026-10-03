@@ -3,6 +3,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from core.database import build_database_config
+from core.storage import build_media_storage
 
 # 1 Caminhos e Variáveis de Ambiente
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,9 +99,8 @@ REST_FRAMEWORK = {
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
+    # Disco em desenvolvimento, bucket S3 em produção (core/storage.py, DEC-004).
+    'default': build_media_storage(DEBUG),
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
